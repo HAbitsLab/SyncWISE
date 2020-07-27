@@ -207,8 +207,6 @@ def seg_smk_video(
     flow_path = os.path.join(
         "../../data/flow_pwc/sub{}".format(subject), vid_name + ".pkl"
     )
-    # update start_time.csv, disable the update when start_time.csv is intentionally manually modified.
-    # update_starttime(starttime_file)
 
     # load start end time
     start_time = load_start_time(starttime_file, vid_name)
