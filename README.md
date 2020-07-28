@@ -1,7 +1,6 @@
-# SyncWISE: Window Induced Shift Estimation for Synchronization of Video and Accelerometry from Wearable Sensors
+# SyncWISE
 
-
-Use the cross correlation method to synchronize sensor data and video.
+Code for paper 'SyncWISE: Window Induced Shift Estimation for Synchronization of Video and Accelerometry from Wearable Sensors'.
 
 ## Requirement:
 1. python 3
