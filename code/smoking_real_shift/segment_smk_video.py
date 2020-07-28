@@ -1,15 +1,16 @@
 import os
+import sys
 import csv
 import time
 import pickle
 import random
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from statistics import mean, stdev, median
 from scipy.stats import skew, kurtosis
 
+sys.path.append(os.path.join(os.path.dirname(__file__), "../syncwise"))
 from cross_correlation_func import cross_correlation_using_fft, compute_shift
 from load_sensor_data import read_data_datefolder_hourfile
 # from update_starttime import update_starttime

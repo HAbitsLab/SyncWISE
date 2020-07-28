@@ -66,11 +66,14 @@ def summarize_shift_per_video(vid, ini_off, max_shift_bidir, in_folder, out_fold
     print(vid)
 
     # note: need to clear folder "./result" each time before running
-    assert len(files) <= 121
+    range_sec_bidir = settings["range_sec_bidir"]
+    step_sec = settings["step_sec"]
+    maxfiles = 2 * range_sec_bidir / step_sec + 1
+    print("max number of files: ", maxfiles)
+    assert len(files) <= maxfiles
     files.sort()
 
     for file in files:
-
         ave_offset, PV1000, PV700, PV300, ave_conf, _, ave_num_segs, conf, offset_sec = read_batch_final_result(
             in_folder, file)
         kde_max_offset_list.append(kde_max_offset)
@@ -84,7 +87,6 @@ def summarize_shift_per_video(vid, ini_off, max_shift_bidir, in_folder, out_fold
             conf_list.append(np.nan)
         else:
             conf_list.append(conf[0])
-
         offset_secs.append(offset_sec)
 
     if not os.path.exists(out_folder):
@@ -133,60 +135,49 @@ def success_Ntrials(metric_ms, result_dir, videos):
             df= pd.read_csv(folder+'/final_shift_result_win10_str1_rdoffset20_wincrt0.8_pca_sigma500_1videos.csv')
             df_new = df.sort_values(by='conf', ascending=False)
 
-            # === TO CHANGE TO ONE SIDE =================================================
-            if df_new['ave_offset'].iloc[0] < metric_ms and df_new['ave_offset'].iloc[0] > -metric_ms:
-                print('1ST: ', vid, df_new['ave_offset'].iloc[0])
+            if df_new['ave_offset'].iloc[0] < metric_ms:
                 success_1 += 1
                 success1_offsets.append(df_new['ave_offset'].iloc[0])
 
-            elif df_new['ave_offset'].iloc[1] < metric_ms and df_new['ave_offset'].iloc[1] > -metric_ms:
-                print('2ND: ', vid, df_new['ave_offset'].iloc[1])
+            elif df_new['ave_offset'].iloc[1] < metric_ms:
                 success_2 += 1
                 success2_offsets.append(df_new['ave_offset'].iloc[1])
 
-            elif df_new['ave_offset'].iloc[2] < metric_ms and df_new['ave_offset'].iloc[2] > -metric_ms:
-                print('3RD: ', vid, df_new['ave_offset'].iloc[2])
+            elif df_new['ave_offset'].iloc[2] < metric_ms:
                 success_3 += 1
                 success3_offsets.append(df_new['ave_offset'].iloc[2])
 
-            elif df_new['ave_offset'].iloc[3] < metric_ms and df_new['ave_offset'].iloc[3] > -metric_ms:
-                print('4TH: ', vid, df_new['ave_offset'].iloc[3])
+            elif df_new['ave_offset'].iloc[3] < metric_ms:
                 success_4 += 1
                 success4_offsets.append(df_new['ave_offset'].iloc[3])
 
-            elif df_new['ave_offset'].iloc[4] < metric_ms and df_new['ave_offset'].iloc[4] > -metric_ms:
-                print('5TH: ', vid, df_new['ave_offset'].iloc[4])
+            elif df_new['ave_offset'].iloc[4] < metric_ms:
                 success_5 += 1
                 success5_offsets.append(df_new['ave_offset'].iloc[4])
 
-            elif df_new['ave_offset'].iloc[5] < metric_ms and df_new['ave_offset'].iloc[5] > -metric_ms:
-                print('6TH: ', vid, df_new['ave_offset'].iloc[5])
+            elif df_new['ave_offset'].iloc[5] < metric_ms:
                 success_6 += 1
                 success6_offsets.append(df_new['ave_offset'].iloc[5])
 
-            elif df_new['ave_offset'].iloc[6] < metric_ms and df_new['ave_offset'].iloc[6] > -metric_ms:
-                print('7TH: ', vid, df_new['ave_offset'].iloc[6 ])
+            elif df_new['ave_offset'].iloc[6] < metric_ms:
                 success_7 += 1
                 success7_offsets.append(df_new['ave_offset'].iloc[6])
 
-            elif df_new['ave_offset'].iloc[7] < metric_ms and df_new['ave_offset'].iloc[7] > -metric_ms:
-                print('8TH: ', vid, df_new['ave_offset'].iloc[7])
+            elif df_new['ave_offset'].iloc[7] < metric_ms:
                 success_8 += 1
                 success8_offsets.append(df_new['ave_offset'].iloc[7])
 
-            elif df_new['ave_offset'].iloc[8] < metric_ms and df_new['ave_offset'].iloc[8] > -metric_ms:
-                print('9TH: ', vid, df_new['ave_offset'].iloc[8])
+            elif df_new['ave_offset'].iloc[8] < metric_ms:
                 success_9 += 1
                 success9_offsets.append(df_new['ave_offset'].iloc[8])
 
-            elif df_new['ave_offset'].iloc[9] < metric_ms and df_new['ave_offset'].iloc[9] > -metric_ms:
-                print('10TH:', vid, df_new['ave_offset'].iloc[9])
+            elif df_new['ave_offset'].iloc[9] < metric_ms:
                 success_10 += 1
                 success10_offsets.append(df_new['ave_offset'].iloc[9])
 
-            # === TO FLIP =================================================
             else: 
                 print('fail ', vid)
+
         except:
             no_file += 1
             print(vid, ' not existing! ', vid)
@@ -236,11 +227,14 @@ def success_Ntrials(metric_ms, result_dir, videos):
 
 if __name__ == '__main__':
     orig_shift_file = "video_shift_orig_trial.txt" # TODO: go to settings
-    result_dir = "../final_result_real/final_all_1st"
-
-    # result_dir='final'
-    # summarize_shift_all_videos(result_dir)
-    # get_test_videos_boundary_removed()
+    # result_dir = "../final_result_real/final_all_1st"
+    result_dir = "final"
+    
+    summarize_shift_all_videos(result_dir)
+    
+    print("Before removing low-quality videos:")
     success_Ntrials(300, result_dir, videos=get_test_videos())
+
+    print("After removing low-quality videos:")
     success_Ntrials(300, result_dir, videos=get_test_videos_boundary_removed())
 
