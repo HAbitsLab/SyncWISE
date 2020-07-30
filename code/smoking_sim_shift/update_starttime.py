@@ -1,3 +1,5 @@
+# TODO: remove this script
+
 # NOTE:
 #   run this script whenever change in ANNOTATION occurs
 

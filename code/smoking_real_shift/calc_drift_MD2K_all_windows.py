@@ -1,11 +1,8 @@
 import os
-import time
-import pickle
 import pandas as pd
 from collections import Counter
 from drift_confidence import drift_confidence
 from AbsErrorROC import gaussianVotingPerVideo
-import numpy as np
 
 
 def drift_windows_for_all_subjects(df_dataset, info_dataset,window_size_sec=20, stride_sec=5, offset_sec=0, kde_num_offset=1, max_offset=20000, \
@@ -74,4 +71,3 @@ def calc_drift_all_windows(df_dataset, info_dataset, vid_target, window_size_sec
     offset_df, _ = gaussianVotingPerVideo(scores_dataframe, kernel_var=500, thresh=0, draw=draw, folder='figures/MD2K_cross_corr' + title_suffix)
     offset_df = offset_df.sort_values(by=['offset'])
     offset_df.to_csv(folder+'/final_result_per_video' + title_suffix + '.csv', index=None)
-    

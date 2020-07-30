@@ -1,30 +1,23 @@
 import os
 import sys
-import csv
-import time
 import pickle
 import random
 import numpy as np
 import pandas as pd
 from sklearn.decomposition import PCA
-from statistics import mean, stdev, median
-from scipy.stats import skew, kurtosis
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../syncwise"))
-from cross_correlation_func import cross_correlation_using_fft, compute_shift
 from load_sensor_data import read_data_datefolder_hourfile
-# from update_starttime import update_starttime
-from settings import settings
 from utils import csv_read
+from settings import settings
 
-# ========================================================================
-#TODO: go to settings
-FPS = 29.969664
-STARTTIME_FILE = "start_time_test.csv"
-reliability_resample_path = "../../data/RESAMPLE200/wild/"
-raw_path = "../../data/RAW/wild/"
-flow_path = "../../data/flow_pwc/"
-# ========================================================================
+
+FPS = settings["FPS"]
+FRAME_INTERVAL = settings["FRAME_INTERVAL"]
+STARTTIME_FILE = settings['STARTTIME_TEST_FILE']
+reliability_resample_path = settings['reliability_resample_path']
+raw_path = settings['raw_path']
+flow_path = settings['flow_path']
 
 
 def load_start_time(df_start_time, vid_name):
@@ -37,9 +30,9 @@ def load_start_time(df_start_time, vid_name):
 def reliability_df_to_consecutive_seconds(df_sensor_rel, window_size_sec, stride_sec):
     # use the threshold ">=8Hz" criterion to select 'good' seconds
     rel_seconds = (
-        df_sensor_rel[df_sensor_rel["SampleCounts"] > 7] #TODO: go to settings
-        .sort_values(by="Time")["Time"]
-        .values
+        df_sensor_rel[df_sensor_rel["SampleCounts"] > 7]  # TODO: go to settings
+            .sort_values(by="Time")["Time"]
+            .values
     )
     # print('There are {0:.2f} % reliable seconds in sensor data.'.format(
     #     len(rel_seconds) / len(df_sensor_rel) * 100))
@@ -93,7 +86,7 @@ def load_flow(vid_path, fps, start_time, offset_sec=0):
 
 
 def load_merge_sensors_cubic_interp(
-    raw_path, sub, device, sensors, sensor_col_header, start_time, end_time, fps
+        raw_path, sub, device, sensors, sensor_col_header, start_time, end_time, fps
 ):
     df_list = []
     for s, col in zip(sensors, sensor_col_header):
@@ -128,17 +121,17 @@ def pca_sensor_flow(df_sensor, df_flow):
 
 
 def shift_video_w_random_offset(
-    df_sensor,
-    df_flow,
-    vid_name,
-    win_start_end,
-    start_time,
-    end_time,
-    kde_num_offset,
-    kde_max_offset,
-    window_size_sec,
-    window_criterion,
-    fps,
+        df_sensor,
+        df_flow,
+        vid_name,
+        win_start_end,
+        start_time,
+        end_time,
+        kde_num_offset,
+        kde_max_offset,
+        window_size_sec,
+        window_criterion,
+        fps,
 ):
     df_dataset_vid = []
     info_dataset_vid = []
@@ -150,7 +143,7 @@ def shift_video_w_random_offset(
         df_window_sensor = df_sensor[
             (df_sensor["time"] >= pd.to_datetime(start, unit="ms"))
             & (df_sensor["time"] < pd.to_datetime(end, unit="ms"))
-        ]
+            ]
         for i in range(kde_num_offset):
             # match video df
             offset = random.randint(-kde_max_offset, kde_max_offset)
@@ -162,11 +155,11 @@ def shift_video_w_random_offset(
             df_window_flow = df_flow[
                 (df_flow["time"] >= pd.to_datetime(start + offset, unit="ms"))
                 & (df_flow["time"] < pd.to_datetime(end + offset, unit="ms"))
-            ]
+                ]
             pd.options.mode.chained_assignment = None
             df_window_flow.loc[:, "time"] = df_window_flow.loc[
-                :, "time"
-            ] - pd.Timedelta(offset, unit="ms")
+                                            :, "time"
+                                            ] - pd.Timedelta(offset, unit="ms")
             df_window = pd.merge_asof(
                 df_window_sensor,
                 df_window_flow,
@@ -185,14 +178,14 @@ def shift_video_w_random_offset(
 
 
 def seg_smk_video(
-    vid_target,
-    window_size_sec=20,
-    stride_sec=5,
-    offset_sec=0,
-    kde_num_offset=20,
-    window_criterion=0.8,
-    kde_max_offset=60000,
-    fps=FPS,
+        vid_target,
+        window_size_sec=20,
+        stride_sec=5,
+        offset_sec=0,
+        kde_num_offset=20,
+        window_criterion=0.8,
+        kde_max_offset=60000,
+        fps=FPS,
 ):
     video_qualified_window_num_list = []
     df_dataset = []
@@ -206,7 +199,8 @@ def seg_smk_video(
     # update start_time.csv, disable the update when start_time.csv is intentionally manually modified.
     # update_starttime(STARTTIME_FILE)
 
-    df_start_time = csv_read(STARTTIME_FILE).set_index("video_name") # method pd.read_csv() may induce bug in extreme batch processing
+    df_start_time = csv_read(STARTTIME_FILE).set_index(
+        "video_name")  # method pd.read_csv() may induce bug in extreme batch processing
     video_names = df_start_time.index.tolist()
     subjects = list(set([vid.split(" ")[0] for vid in video_names]))
 
@@ -341,4 +335,3 @@ def seg_smk_video(
     ).to_csv("./data/num_valid_windows" + title_suffix + ".csv", index=None)
 
     return df_dataset, info_dataset
-

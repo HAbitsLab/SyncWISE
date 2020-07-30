@@ -1,5 +1,5 @@
 import sys
-from seg_smk_video_all import seg_smk_video_all, load_windows
+from seg_smk_video_all import seg_smk_video_all
 from calc_video_offset_all import calc_video_offset_all
 from settings import settings
 

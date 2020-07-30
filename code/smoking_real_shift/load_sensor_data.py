@@ -3,22 +3,25 @@ import numbers
 import pandas as pd
 from datetime import datetime, timedelta
 import pytz
-settings = {}
-settings['TIMEZONE'] = pytz.timezone('America/Chicago')
 
-##################################################################################################################################
+from settings import settings
+
+
+# ######################################################################################################################
 # 
-#   READ EPISODE DATA FROM DATE FOLDER HOUR FILE, eg. /Volumes/Shibo/SHIBO/MD2K/RESAMPLE200/wild/205/CHEST/ACCELEROMETER/08-20-17/08-20-17_00.csv
+# READ EPISODE DATA FROM DATE FOLDER HOUR FILE,
+# eg. /Volumes/Shibo/SHIBO/MD2K/RESAMPLE200/wild/205/CHEST/ACCELEROMETER/08-20-17/08-20-17_00.csv
 # 
-##################################################################################################################################
+# ######################################################################################################################
 
 def unixtime_to_datetime(unixtime):
     if len(str(abs(unixtime))) == 13:
-        return datetime.utcfromtimestamp(unixtime/1000).\
+        return datetime.utcfromtimestamp(unixtime / 1000). \
             replace(tzinfo=pytz.utc).astimezone(settings["TIMEZONE"])
     elif len(str(abs(unixtime))) == 10:
-        return datetime.utcfromtimestamp(unixtime).\
+        return datetime.utcfromtimestamp(unixtime). \
             replace(tzinfo=pytz.utc).astimezone(settings["TIMEZONE"])
+
 
 def datetime_to_foldername(dt):
     return dt.strftime('%m-%d-%y')
@@ -39,10 +42,10 @@ def list_date_folders_hour_files(start, end):
 
     # FFList means dateFolderHourFileList
     FFList = [[datetime_to_foldername(start), datetime_to_filename(start)]]
-    curr = start + timedelta(hours = 1)
+    curr = start + timedelta(hours=1)
     while curr.replace(minute=0, second=0, microsecond=0) <= end.replace(minute=0, second=0, microsecond=0):
         FFList.append([datetime_to_foldername(curr), datetime_to_filename(curr)])
-        curr += timedelta(hours = 1)
+        curr += timedelta(hours=1)
 
     return FFList
 
@@ -54,7 +57,7 @@ def read_data_datefolder_hourfile(resample_path, subject, device, sensor, start_
     # 1. read in all the data within the range
     dfConcat = []
     FFList = list_date_folders_hour_files(start_time, end_time)
-    dfConcat = [pd.read_csv(os.path.join(resample_path, subject, device, sensor, FFList[i][0], FFList[i][1]))\
+    dfConcat = [pd.read_csv(os.path.join(resample_path, subject, device, sensor, FFList[i][0], FFList[i][1])) \
                 for i in range(len(FFList))]
     df = pd.concat(dfConcat)
 

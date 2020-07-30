@@ -9,8 +9,7 @@ import numbers
 import numpy as np
 import pandas as pd
 from dateutil import parser
-from six import string_types
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 from sklearn.metrics import *
 from settings import settings
 pd.options.mode.chained_assignment = None  # default='warn' ref:https://stackoverflow.com/questions/20625582/how-to-deal-with-settingwithcopywarning-in-pandas

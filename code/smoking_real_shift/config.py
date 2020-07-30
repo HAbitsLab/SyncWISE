@@ -54,5 +54,3 @@ for vid in test_videos:
             -range_bidir + i * step_sec + offset, 
             vid
         ))
-
-

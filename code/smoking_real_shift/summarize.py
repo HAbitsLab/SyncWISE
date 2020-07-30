@@ -5,7 +5,6 @@ import pandas as pd
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import matplotlib.lines as mlines
 import matplotlib.ticker as mtick
 
 from settings import settings
@@ -217,7 +216,7 @@ def success_Ntrials(metric_ms, result_dir, videos):
     plt.xlabel('Top K Proposal Examined')
     plt.ylabel('PV-300')
     plt.ylim([0, 100])
-    locs, labels = plt.xticks() 
+    # locs, labels = plt.xticks()
     plt.xticks(np.arange(1, topK + 1, step=1)) 
     ax.yaxis.set_major_formatter(mtick.PercentFormatter())
     plt.tight_layout()
@@ -226,7 +225,7 @@ def success_Ntrials(metric_ms, result_dir, videos):
 
 
 if __name__ == '__main__':
-    orig_shift_file = "video_shift_orig_trial.txt" # TODO: go to settings
+    orig_shift_file = settings["ORIGIN_SHIFT_FILE"]
     # result_dir = "../final_result_real/final_all_1st"
     result_dir = "final"
     

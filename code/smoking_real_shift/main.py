@@ -2,7 +2,6 @@ import sys
 
 from segment_smk_video import seg_smk_video
 from calc_drift_MD2K_all_windows import calc_drift_all_windows
-from settings import settings
 
 
 if __name__ == "__main__":
@@ -51,5 +50,5 @@ if __name__ == "__main__":
         kde_num_offset,
         kde_max_offset,
         window_criterion,
-        result_dir = "final"
+        result_dir="final"
     )

@@ -5,7 +5,16 @@ import numpy as np
 import pandas as pd
 
 from utils import create_folder
+from settings import settings
 
+# =====================================================================================
+FPS = settings["FPS"]
+FRAME_INTERVAL = settings["FRAME_INTERVAL"]
+STARTTIME_FILE = settings['STARTTIME_TEST_FILE']
+reliability_resample_path = settings['reliability_resample_path']
+raw_path = settings['raw_path']
+flow_path = settings['flow_path']
+# =====================================================================================
 
 def read_batch_final_results(
     window_size_sec,

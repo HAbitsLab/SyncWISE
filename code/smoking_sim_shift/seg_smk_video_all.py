@@ -9,8 +9,7 @@ from sklearn.decomposition import PCA
 
 from load_sensor_data import read_data_datefolder_hourfile
 from settings import settings
-from update_starttime import update_starttime
-from utils import csv_read, list_files_in_directory
+from utils import csv_read
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../syncwise"))
 from cross_correlation_func import compute_shift, cross_correlation_using_fft
