@@ -15,6 +15,7 @@ Run SyncWISE algorithm on Sense2StopSync dataset with simulated shifts.
 
 In folder `Sense2StopSync_sim_shift`:
 
+0. `python3 config.py` generate test and validation set file list.
 1. `run.sh`: cmd `sh run.sh 7` (if run this bash file with 7 cores in parallel). Run on test set with random simulated shift.
 2. `baseline_MIT_entirevideo_MD2K.py`: baseline method using x-axis.
 3. `baseline_MIT_entirevideo_MD2K_pca.py`: baseline method using pca.
@@ -26,6 +27,7 @@ The result can be found in ...
 
 In folder `Sense2StopSync_sim_shift`:
 
+0. `python3 config.py` generate test and validation set file list.
 1. `run_ablation_num_offset.sh`: cmd `sh run_num_offset.sh 7`. Sanity check to find best parameter number of offset using validation set.
 2. `run_ablation_max_offset.sh`: cmd `sh run_max_offset.sh 7`. sanity check to find best parameter max offset using validation set.
 3. `summarize.py`: generate final result or sensitivity study result summary.
