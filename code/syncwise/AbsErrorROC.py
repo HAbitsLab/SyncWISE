@@ -1,11 +1,7 @@
 import numpy as np
-import matplotlib
-# matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 import pandas as pd
-import bisect
 import os
-from statistics import mean, stdev, median
 from scipy.optimize import curve_fit
 from textwrap import wrap
 
@@ -60,8 +56,6 @@ def gaussianVoting(scores, kernel_var=500, draw=True, path='../figures/offset.jp
     x = np.arange(-offset_max, offset_max+1)
     y = np.zeros(2*offset_max+1)
     for i in range(scores.shape[0]):
-        # if scores[i, 0] > 3:
-        #y += gaussian(x, scores[i, 1], kernel_var)
         y += gaussian(x, scores[i, 1], kernel_var)*scores[i, 0]
     y /= np.sum(scores[:, 0])
     offset = np.argmax(y)-offset_max
@@ -70,8 +64,6 @@ def gaussianVoting(scores, kernel_var=500, draw=True, path='../figures/offset.jp
     # confidence of the shift estimation can be described as the variance of the estimated model parameters
     # conf = max(abs(y-median(y)))/stdev(y)
     try:
-        #popt, pcov = curve_fit(scaled_gaussian, x, y, bounds=([-60000, 0, 0], [60000, 2000, np.inf]))
-        #y_nlm = scaled_gaussian(x, *popt)
         popt, pcov = curve_fit(gaussian, x, y, bounds=([-offset_max, 0], [offset_max, np.inf]))
         y_nlm = gaussian(x, *popt)        
     except RuntimeError:
@@ -86,10 +78,6 @@ def gaussianVoting(scores, kernel_var=500, draw=True, path='../figures/offset.jp
         plt.xlabel('shift/ms')
         plt.ylabel('probability')
         plt.legend(loc='upper right')
-        # plt.grid()
-        #plt.show()
-        #title = '{} windows, offset={}s, nlm_params={:.2f}, {:.2f}, {:.2f}, {:.2f}'.\
-                  #format(scores.shape[0], offset, popt[0], popt[1], pcov[0, 0], pcov[1, 1])
         title = '{} windows, offset={}ms, conf={:.2f}'.format(scores.shape[0], int(offset), conf)        
         plt.title("\n".join(wrap(title, 60)))
         plt.savefig(path)
@@ -128,46 +116,13 @@ def gaussianVotingPerVideo(scores_dataframe, kernel_var=100, thresh=0, min_votin
         ave_segs = np.nan
     summary_df = pd.DataFrame(np.concatenate([np.stack([videos, offset, abs(offset), num_valid_segs, conf], axis=1), nlm_params, abs(nlm_params[:, :1])], axis=1), \
                         columns=['video', 'offset', 'abs_offset', 'num_segs', 'conf', 'mu', 'sigma', 'mu_var', 'sigma_var', 'abs_mu'])
-    #mean_nlm_params = np.mean(nlm_params, axis=0)
-    #mean_abs_mu = np.mean(np.abs(nlm_params[:, 0]))
-    #summary_df = summary_df.append({'video': 'mean', 'offset': np.mean(offset), 'abs_offset': np.mean(abs(offset)), \
-                       #'num_segs': np.mean(num_valid_segs), 'conf': np.mean(conf), \
-                       #'mu': mean_nlm_params[0], 'sigma': mean_nlm_params[1], \
-                       #'mu_var': mean_nlm_params[2], 'sigma_var': mean_nlm_params[3], \
-                       #'abs_mu': mean_abs_mu}, ignore_index=True)
+
     return summary_df, ave_segs
 
 def testCase1():
     scores = np.random.rand(10, 2)
     ave_errors = AbsErrorROCPerPoint(scores)
     print(ave_errors)
-    
-def testCase2():
-    data_file = '/home/yun/Dropbox (GaTech)/sync/code/cross_corr/conf_drift_video.csv'
-    scores_dataframe = pd.read_csv(data_file)
-    scores = scores_dataframe[['confidence', 'drift']].to_numpy()
-    med_errors = AbsErrorROCPerPoint(scores)
-    
-def testCase3():
-    data_file = '/home/yun/Dropbox (GaTech)/sync/code/cross_corr/conf_drift_video.csv'
-    data_file = '/home/yun/Dropbox (GaTech)/sync/code/cross_corr/result/conf_drift_video_accx.csv'
-    scores_dataframe = pd.read_csv(data_file)
-    scores = scores_dataframe[['confidence', 'drift']].to_numpy()
-    scores[:, 1] = abs(scores[:, 1])
-    med_errors = AbsErrorROCFixedSteps(scores)
-    
-def testCase4():
-    data_file = '/home/yun/Dropbox (GaTech)/sync/code/cross_corr/conf_drift_video.csv'
-    scores_dataframe = pd.read_csv(data_file)
-    scores = scores_dataframe[['confidence', 'drift']].to_numpy()
-    offset = gaussianVoting(scores)
-    print(offset)
-    
-def testCase5():
-    data_file = '/home/yun/Dropbox (GaTech)/sync/code/cross_corr/result/conf_drift_video_win10_str1_rdoffset20_maxoffset10000_wincrt0.8_pca_sigma500.csv'
-    scores_dataframe = pd.read_csv(data_file)
-    offset, _ = gaussianVotingPerVideo(scores_dataframe, kernel_var=500, draw=True)
-    print(offset)
 
 def videoDrift(scores_dataframe, output_file):
     offset, _ = gaussianVotingPerVideo(scores_dataframe, draw=True, folder='../figures/cross_corr')
@@ -217,16 +172,7 @@ def videoDriftROC(scores_dataframe, num_thresh=50, draw=True, folder='../figures
         
     
 if __name__ == '__main__':
-    #data_file = 'result/conf_drift_video_accx.csv' # data_file = 'result/conf_drift_video_accx.csv'
     data_file = '/home/yun/Dropbox (GaTech)/sync/code/cross_corr/result/conf_drift_video_win10_str1_offset0_rdoffset20_maxoffset10000_wincrt0.8_pca_sigma500.csv'
-    ##data_file = '/home/yun/Dropbox (GaTech)/sync/code/cross_corr_permute_video/result/conf_drift_video_win10_str2_no_permutation_video.csv'
-    #output_file = 'final_result_per_video_accx.csv'
     scores_dataframe = pd.read_csv(data_file)
-    ##videoDrift(scores_dataframe, output_file)
     videoDriftROC(scores_dataframe)
     #testCase1()
-    #testCase2()
-    #testCase3()
-    #testCase4()
-    #testCase5()
-    

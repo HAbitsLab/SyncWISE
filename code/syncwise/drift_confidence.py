@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 from cross_correlation_func import cross_correlation_using_fft, compute_shift
-from scipy.stats import skew, kurtosis
+from scipy.stats import kurtosis
 from statistics import mean, stdev, median
 from textwrap import wrap
 
@@ -19,10 +19,8 @@ def drift_confidence(df_resample, out_path, fps, pca=1, save_fig=0):
     fx_ay_drift = shift * 1000/fps
     fx_ay_conf = dist/stdev(fftshift)
 
-    # if fx_ay_conf > 5:
     if save_fig:
-        fig, ax = plt.subplots(2, 4, figsize=(20,10))
-        # plt.set_color_cycle(['red', 'black', 'blue', 'yellow', 'grey'])
+        fig, ax = plt.subplots(2, 4, figsize=(20, 10))
         plt.subplot(2, 4, 1)
         plt.plot(df_resample['accx'])
         plt.plot(df_resample['accy'])
