@@ -6,12 +6,11 @@ import pickle
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-from collections import Counter
 
 from load_sensor_data import read_data_datefolder_hourfile
 from resample import resample
 
-sys.path.append('..')
+sys.path.append('src')
 from utils import create_folder
 from settings import settings
 
@@ -19,8 +18,12 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../syncwise"))
 from cross_correlation_func import compute_shift, cross_correlation_using_fft
 
 
+FPS = settings["FPS"]
+FRAME_INTERVAL = settings["FRAME_INTERVAL"]
+
+
 def plot_MIT_baseline(df_resample, len_raw_sensor, fps, out_path):
-    fps=29.969664
+    fps = FPS
     df_resample = df_resample.reset_index()
     df_resample['time'] -= df_resample['time'][0]
     df_resample['time'] /= 1000
@@ -90,7 +93,7 @@ def baseline_MIT_video_MD2K(window_size_sec, stride_sec, num_offsets, max_offset
             if vid_name not in df_start_time.index:
                 continue
             start_time = df_start_time.loc[vid_name]['start_time']+offset
-            vid_max_len = (17*60+43)*1000 # TODO: go to settings
+            vid_max_len = settings["vid_max_len"]
             interval = [int(start_time), int(start_time) + vid_max_len]
 
             # load sensor data for drawing
@@ -100,8 +103,8 @@ def baseline_MIT_video_MD2K(window_size_sec, stride_sec, num_offsets, max_offset
 
             # load sensor reliability data
             df_rel = read_data_datefolder_hourfile(RESAMPLE_PATH, sub, DEVICE, SENSOR + '_reliability', *interval)
-            # use the threshold ">=7Hz" to select 'good' seconds
-            rel_seconds = df_rel[df_rel['SampleCounts'] > 7].sort_values(by='Time')['Time'].values
+            # use the threshold to select 'good' seconds
+            rel_seconds = df_rel[df_rel['SampleCounts'] > settings['sample_counts']].sort_values(by='Time')['Time'].values
 
             # load optical flow data and assign unixtime to each frame
             motion = pickle.load(open(vid_path, 'rb'))
@@ -144,7 +147,6 @@ def baseline_MIT_video_MD2K(window_size_sec, stride_sec, num_offsets, max_offset
             fftshift = cross_correlation_using_fft(df_resample['diff_flowx'].values, df_resample['accx'].values)
             shift = compute_shift(fftshift)
             shift_ms = shift * 1000 / fps
-            # print('diff_flowx accx delta={:.1f} ms'.format(shift_ms))
             video_list.append(vid_name)
             offset_list.append(shift_ms)
 
@@ -169,7 +171,6 @@ def summarize_batch_result():
     file_path = './file_list_random.txt'
     summ_path = './result/batch_result_baseline_MIT_random.csv'
     stride_sec = 1
-    num_offsets = 20
     with open(file_path) as f:
         params = f.readlines()
     params = params[:1]
@@ -177,8 +178,6 @@ def summarize_batch_result():
     fout.write('window_size_sec, stride_sec, num_offsets, window_criterion, max_offset, num_videos, ave_offset, num_1000ms, num_700ms, num_300ms\n')
     for line in params:
         window_size_sec, window_criterion, max_offset, num_offsets, offset_sec = line.split()
-        title_suffix = '_win{}_str{}_rdoffset{}_maxoffset{}_wincrt{}_pca'\
-            .format(window_size_sec, stride_sec, num_offsets, max_offset, window_criterion)
         result_df = baseline_MIT_video_MD2K(window_size_sec, stride_sec, num_offsets, max_offset, window_criterion, offset_sec=offset_sec)
         print(result_df)
         error_abs = abs(result_df['offset'].to_numpy())

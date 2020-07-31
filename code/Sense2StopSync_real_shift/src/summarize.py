@@ -16,14 +16,28 @@ def get_test_videos():
 
 
 def get_test_videos_boundary_removed():
+    """
+
+    Returns:
+
+    """
     test_videos = pd.read_csv(settings["STARTTIME_TEST_FILE"])["video_name"].tolist()
-    boundary_set = pd.read_csv("boundary_set.csv")["video_name"].tolist()
+    boundary_set = pd.read_csv(settings["LOW_QUALITY_VIDEOS"])["video_name"].tolist()
     boundary_removed = [vid for vid in test_videos if vid not in boundary_set]
     print([vid for vid in test_videos if vid in boundary_set])
     return boundary_removed
 
 
 def read_batch_final_result(folder, file):
+    """
+
+    Args:
+        folder:
+        file:
+
+    Returns:
+
+    """
     result_df = pd.read_csv(os.path.join(folder, file))
     offset_sec = float(file.split("_offset",1)[1].split("_rdoffset",1)[0])
     num_videos = len(result_df)
@@ -48,6 +62,18 @@ def read_batch_final_result(folder, file):
 
 
 def summarize_shift_per_video(vid, ini_off, max_shift_bidir, in_folder, out_folder):
+    """
+
+    Args:
+        vid:
+        ini_off:
+        max_shift_bidir:
+        in_folder:
+        out_folder:
+
+    Returns:
+
+    """
     window_size_sec = 10
     stride_sec = 1
     window_criterion = 0.8
@@ -103,6 +129,14 @@ def summarize_shift_per_video(vid, ini_off, max_shift_bidir, in_folder, out_fold
 
 
 def summarize_shift_all_videos(result_dir):
+    """
+
+    Args:
+        result_dir:
+
+    Returns:
+
+    """
     videos = get_test_videos()
     vid_shift = pd.read_csv(orig_shift_file, names=["videos", "offsets"])
     vid_shift = vid_shift.set_index("videos")
@@ -121,6 +155,16 @@ def summarize_shift_all_videos(result_dir):
 
 
 def success_Ntrials(metric_ms, result_dir, videos):
+    """
+
+    Args:
+        metric_ms:
+        result_dir:
+        videos:
+
+    Returns:
+
+    """
     total = len(videos)
     success_1, success_2, success_3, success_4, success_5, success_6 = 0, 0, 0, 0, 0, 0
     success_7, success_8, success_9, success_10, no_file = 0, 0, 0, 0, 0

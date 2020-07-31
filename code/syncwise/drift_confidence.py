@@ -6,6 +6,18 @@ from textwrap import wrap
 
 
 def drift_confidence(df_resample, out_path, fps, pca=1, save_fig=0):
+    """
+
+    Args:
+        df_resample:
+        out_path:
+        fps:
+        pca:
+        save_fig:
+
+    Returns:
+
+    """
     if pca:
         flow_key = 'diffflow_pca'
         acc_key = 'acc_pca'

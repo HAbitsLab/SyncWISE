@@ -1,6 +1,7 @@
 import os
 import sys
-from seg_smk_video_all import seg_smk_video_all
+
+from segment_video_all import segment_video_all
 from calc_video_offset_all import calc_video_offset_all
 from settings import settings
 
@@ -20,12 +21,12 @@ if __name__ == "__main__":
     ) = parameter_str.split(" ")
     window_size_sec = int(window_size_sec)
     offset_sec = float(offset_sec)
-    # note that when converted to float, an integer will be appended a '.0'
     kde_num_offset = int(kde_num_offset)
     kde_max_offset = int(kde_max_offset)
     window_criterion = float(window_criterion)
 
-    df_dataset_all, info_dataset_all = seg_smk_video_all(
+    # segment videos into windows
+    df_dataset_all, info_dataset_all = segment_video_all(
         window_size_sec,
         stride_sec,
         offset_sec,
@@ -36,19 +37,14 @@ if __name__ == "__main__":
         starttime_file,
     )
 
+    # calculate drift for all the windows
     calc_video_offset_all(
         df_dataset_all, 
         info_dataset_all,
         window_size_sec,
         stride_sec,
-        offset_sec,
         kde_num_offset,
-        kde_max_offset,
-        window_criterion,
         qualified_window_num=10*kde_num_offset, 
         save_dir='./result/summary_ablation',
         pca=1
     )
-
-
-

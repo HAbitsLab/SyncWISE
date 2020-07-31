@@ -1,7 +1,8 @@
 import sys
 
-from segment_smk_video import seg_smk_video
-from calc_drift_MD2K_all_windows import calc_drift_all_windows
+from segment_video import segment_video
+from calc_video_offset_all import calc_drift_all_windows
+from settings import settings
 
 
 if __name__ == "__main__":
@@ -27,8 +28,8 @@ if __name__ == "__main__":
     stride_sec = 1
     full_vid_name = subject + " " + video
 
-    # TODO: explanations
-    df_dataset, info_dataset = seg_smk_video(
+    # segment videos into windows
+    df_dataset, info_dataset = segment_video(
         full_vid_name,
         window_size_sec,
         stride_sec,
@@ -39,7 +40,7 @@ if __name__ == "__main__":
         29.969664
     )
 
-    # TODO: explanations
+    # calculate drift for all the windows
     calc_drift_all_windows(
         df_dataset, 
         info_dataset,
@@ -50,5 +51,6 @@ if __name__ == "__main__":
         kde_num_offset,
         kde_max_offset,
         window_criterion,
+        qualified_window_num=settings["qualified_window_num"] * kde_num_offset,
         result_dir="final"
     )

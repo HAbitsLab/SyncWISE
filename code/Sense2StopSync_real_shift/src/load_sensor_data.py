@@ -34,6 +34,12 @@ def datetime_to_filename(dt):
 def list_date_folders_hour_files(start, end):
     """
     param interval: python datetime format or unixtimestamp (int)
+    Args:
+        start:
+        end:
+
+    Returns:
+
     """
     if isinstance(start, numbers.Integral):
         start = unixtime_to_datetime(start)
@@ -53,6 +59,17 @@ def list_date_folders_hour_files(start, end):
 def read_data_datefolder_hourfile(resample_path, subject, device, sensor, start_time, end_time):
     """
     param interval: python unixtimestamp
+
+    Args:
+        resample_path:
+        subject:
+        device:
+        sensor:
+        start_time:
+        end_time:
+
+    Returns:
+
     """
     # 1. read in all the data within the range
     dfConcat = []

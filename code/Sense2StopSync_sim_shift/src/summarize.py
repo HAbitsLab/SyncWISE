@@ -55,7 +55,6 @@ def read_batch_final_results(
             error_abs[(~np.isnan(error_abs.astype(np.float))) & (error_abs <= 300)]
         ) / float(num_videos)
         conf = 200000 / (result_df["sigma"].to_numpy() * result_df["mu_var"].to_numpy())
-        # ave_conf = np.mean(conf[~np.isnan(conf.astype(np.float)) & (conf < 10000)])
         ave_conf = np.mean(conf[~np.isnan(conf.astype(np.float))])
         return (
             ave_offset,
@@ -89,7 +88,6 @@ def summarize_xaxis_batch_to_csv(summ_path):
             kde_num_offset,
             offset_sec,
         ) = line.split()
-        # if 1:#int(offset_sec):
         title_suffix = "_win{}_str{}_offset{}_rdoffset{}_maxoffset{}_wincrt{}_pca_sigma500".format(
             window_size_sec,
             stride_sec,
@@ -98,12 +96,7 @@ def summarize_xaxis_batch_to_csv(summ_path):
             max_offset,
             window_criterion,
         )
-        # else:
-        #     title_suffix = '_win{}_str{}_rdoffset{}_maxoffset{}_wincrt{}_pca_sigma500'\
-        #         .format(window_size_sec, stride_sec, kde_num_offset, max_offset, window_criterion)
         result_file = "result/summary_xx/final_result_per_video" + title_suffix + ".csv"
-        # out_path = 'result/summary_pca/final_result_per_video' + title_suffix + '.csv'
-        # os.rename(result_file, out_path)
         result_df = pd.read_csv(result_file)
         num_videos = len(result_df)
         error_abs = abs((result_df["offset"] + float(offset_sec) * 1000).to_numpy())
@@ -166,7 +159,6 @@ def summarize_pca_batch_to_csv(summ_path):
             kde_num_offset,
             offset_sec,
         ) = line.split()
-        # if 1:#int(offset_sec):
         title_suffix = "_win{}_str{}_offset{}_rdoffset{}_maxoffset{}_wincrt{}_pca_sigma500".format(
             window_size_sec,
             stride_sec,
@@ -175,14 +167,9 @@ def summarize_pca_batch_to_csv(summ_path):
             max_offset,
             window_criterion,
         )
-        # else:
-        #     title_suffix = '_win{}_str{}_rdoffset{}_maxoffset{}_wincrt{}_pca_sigma500'\
-        #         .format(window_size_sec, stride_sec, kde_num_offset, max_offset, window_criterion)
         result_file = (
             "result/summary_pca/final_result_per_video" + title_suffix + ".csv"
         )
-        # out_path = 'result/summary_pca/final_result_per_video' + title_suffix + '.csv'
-        # os.rename(result_file, out_path)
         try:
             result_df = pd.read_csv(result_file)
         except:
@@ -328,7 +315,7 @@ def summarize_ablation_augmentation_maxoffset():
         fig, ax = plt.subplots()
         ax.plot(
             df_plot["kde_max_offset"] / 1000, df_plot["ave_offset"] / 1000
-        )  # , color="red", marker="o"
+        )
         ax.set_xlabel("max range of random offset in wKDE / sec", fontsize=14)
         ax.set_ylabel("average absolute error / sec", fontsize=14)
         plt.grid()
@@ -357,14 +344,8 @@ def summarize_ablation_augmentation_numoffset():
     kde_num_offsets = [1, 20, 40, 60, 80, 100]
     first_time_flag = 1
 
-    font = {
-        "family": "normal",
-        "weight": "normal",
-        "size": 12,
-    }
     my_dpi = 100
-    fig = plt.figure(figsize=(500 / my_dpi, 300 / my_dpi))  # , dpi=my_dpi)
-    # fig, ax = plt.subplots()
+    fig = plt.figure(figsize=(500 / my_dpi, 300 / my_dpi))
     ax = fig.add_subplot(111)
 
     for offset_sec in offset_secs:
@@ -439,12 +420,11 @@ def summarize_ablation_augmentation_numoffset():
             df_plot["kde_num_offset"],
             df_plot["ave_offset"],
             label="input shift: {}s".format(offset_sec),
-        )  # , color="red", marker="o"
+        )
 
     ax.set_xlabel("augmentation ratio in wKDE", fontsize=14)
     ax.set_ylabel("average error / ms", fontsize=14)
     ax.set_xticks([1, 20, 40, 60, 80, 100])
-    legend = ax.legend()  # loc="upper right", shadow=True, fontsize='x-large')
     plt.grid()
     plt.tight_layout()
     fig.savefig(
@@ -454,8 +434,7 @@ def summarize_ablation_augmentation_numoffset():
                 window_size_sec, kde_max_offset, offset_sec
             ),
         ),
-        format="eps",  # dpi=100, \
-        # bbox_inches='tight'
+        format="eps"
     )
     # plt.show()
     plt.close()

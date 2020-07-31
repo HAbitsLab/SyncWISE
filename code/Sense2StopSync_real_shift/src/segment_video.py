@@ -1,12 +1,10 @@
 import os
-import sys
 import pickle
 import random
 import numpy as np
 import pandas as pd
 from sklearn.decomposition import PCA
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../syncwise"))
 from load_sensor_data import read_data_datefolder_hourfile
 from utils import csv_read
 from settings import settings
@@ -15,12 +13,22 @@ from settings import settings
 FPS = settings["FPS"]
 FRAME_INTERVAL = settings["FRAME_INTERVAL"]
 STARTTIME_FILE = settings['STARTTIME_TEST_FILE']
+sample_counts = settings["sample_counts"]
 reliability_resample_path = settings['reliability_resample_path']
 raw_path = settings['raw_path']
 flow_path = settings['flow_path']
 
 
 def load_start_time(df_start_time, vid_name):
+    """
+    load start time.
+    Args:
+        df_start_time: dataframe, start time dataframe
+        vid_name: str, video name
+
+    Returns:
+        int
+    """
     if vid_name not in df_start_time.index:
         return None
     start_time = df_start_time.loc[vid_name]["start_time"]
@@ -28,9 +36,20 @@ def load_start_time(df_start_time, vid_name):
 
 
 def reliability_df_to_consecutive_seconds(df_sensor_rel, window_size_sec, stride_sec):
-    # use the threshold ">=8Hz" criterion to select 'good' seconds
+    """
+    convert reliability dataframe to consecutive seconds
+    Args:
+        df_sensor_rel: reliability dataframe
+        window_size_sec: int, window size in seconds
+        stride_sec: int, stride size in seconds
+
+    Returns:
+        list, a list of all the possible [window_start, window_end] pairs that meets the requirement.
+
+    """
+    # select 'good' seconds
     rel_seconds = (
-        df_sensor_rel[df_sensor_rel["SampleCounts"] > 7]  # TODO: go to settings
+        df_sensor_rel[df_sensor_rel["SampleCounts"] > sample_counts]
             .sort_values(by="Time")["Time"]
             .values
     )
@@ -64,6 +83,18 @@ def consecutive_seconds(rel_seconds, window_size_sec, stride_sec=1):
 
 
 def load_flow(vid_path, fps, start_time, offset_sec=0):
+    """
+    load optical flow given a video.
+    Args:
+        vid_path: str, video path
+        fps: float, fps
+        start_time: int, start time unixtime in milliseconds
+        offset_sec: float, start offset in seconds
+
+    Returns:
+        dataframe, optical flow with columns second, diff_flowx, diff_flowy
+
+    """
     motion = pickle.load(open(vid_path, "rb"))
     step = 1000.0 / fps
     length = motion.shape[0]
@@ -88,6 +119,21 @@ def load_flow(vid_path, fps, start_time, offset_sec=0):
 def load_merge_sensors_cubic_interp(
         raw_path, sub, device, sensors, sensor_col_header, start_time, end_time, fps
 ):
+    """
+
+    Args:
+        raw_path:
+        sub:
+        device:
+        sensors:
+        sensor_col_header:
+        start_time:
+        end_time:
+        fps:
+
+    Returns:
+
+    """
     df_list = []
     for s, col in zip(sensors, sensor_col_header):
         df_sensor = read_data_datefolder_hourfile(
@@ -108,6 +154,15 @@ def load_merge_sensors_cubic_interp(
 
 
 def pca_sensor_flow(df_sensor, df_flow):
+    """
+
+    Args:
+        df_sensor:
+        df_flow:
+
+    Returns:
+
+    """
     pca_sensor = PCA(n_components=1)
     df_sensor[["accx", "accy", "accz"]] -= df_sensor[["accx", "accy", "accz"]].mean()
     df_sensor["acc_pca"] = pca_sensor.fit_transform(
@@ -133,6 +188,24 @@ def shift_video_w_random_offset(
         window_criterion,
         fps,
 ):
+    """
+
+    Args:
+        df_sensor:
+        df_flow:
+        vid_name:
+        win_start_end:
+        start_time:
+        end_time:
+        kde_num_offset:
+        kde_max_offset:
+        window_size_sec:
+        window_criterion:
+        fps:
+
+    Returns:
+
+    """
     df_dataset_vid = []
     info_dataset_vid = []
     cnt_windows = 0
@@ -177,7 +250,7 @@ def shift_video_w_random_offset(
     return cnt_windows, df_dataset_vid, info_dataset_vid
 
 
-def seg_smk_video(
+def segment_video(
         vid_target,
         window_size_sec=20,
         stride_sec=5,
@@ -187,6 +260,21 @@ def seg_smk_video(
         kde_max_offset=60000,
         fps=FPS,
 ):
+    """
+
+    Args:
+        vid_target:
+        window_size_sec:
+        stride_sec:
+        offset_sec:
+        kde_num_offset:
+        window_criterion:
+        kde_max_offset:
+        fps:
+
+    Returns:
+
+    """
     video_qualified_window_num_list = []
     df_dataset = []
     info_dataset = []

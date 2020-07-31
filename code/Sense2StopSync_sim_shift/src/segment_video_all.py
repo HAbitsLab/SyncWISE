@@ -1,7 +1,6 @@
 import os
 import pickle
 import random
-import sys
 
 import numpy as np
 import pandas as pd
@@ -11,12 +10,10 @@ from load_sensor_data import read_data_datefolder_hourfile
 from settings import settings
 from utils import csv_read
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../syncwise"))
-from cross_correlation_func import compute_shift, cross_correlation_using_fft
-
 
 FPS = settings["FPS"]
 FRAME_INTERVAL = settings["FRAME_INTERVAL"]
+sample_counts = settings["sample_counts"]
 
 
 def load_start_time(start_time_file, vid):
@@ -29,7 +26,7 @@ def load_start_time(start_time_file, vid):
 
 
 def reliability_df_to_consecutive_seconds(
-    df_sensor_rel, window_size_sec, stride_sec, threshold=7
+    df_sensor_rel, window_size_sec, stride_sec, threshold=sample_counts
 ):
     # use the threshold ">=7Hz" criterion to select 'good' seconds
     rel_seconds = (
@@ -290,7 +287,7 @@ def seg_smk_video(
     return vid_qual_win_cnt, df_dataset, info_dataset
 
 
-def seg_smk_video_all(
+def segment_video_all(
     window_size_sec,
     stride_sec,
     offset_sec,
