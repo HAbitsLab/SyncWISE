@@ -442,7 +442,7 @@ def summarize_ablation_augmentation_numoffset():
 
 if __name__ == "__main__":
     create_folder("./final/")
-    # summarize_xaxis_batch_to_csv('./result/batch_result_xx_sigma500_flow_w_random.csv')
-    # summarize_pca_batch_to_csv('./result/batch_result_pca_sigma500_flow_w_random.csv')
+    summarize_xaxis_batch_to_csv('./result/batch_result_xx_sigma500_flow_w_random.csv')
+    summarize_pca_batch_to_csv('./result/batch_result_pca_sigma500_flow_w_random.csv')
     # summarize_ablation_augmentation_numoffset()
-    summarize_ablation_augmentation_maxoffset()
+    # summarize_ablation_augmentation_maxoffset()

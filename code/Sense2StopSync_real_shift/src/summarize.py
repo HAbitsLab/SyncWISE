@@ -83,7 +83,6 @@ def summarize_shift_per_video(vid, ini_off, max_shift_bidir, in_folder, out_fold
     PV300_list, PV700_list, PV1000_list = [], [], []
     ave_conf_list, ave_num_segs_list = [], []
     conf_list, offset_secs = [], []
-    first_time_flag = 1
 
     # read all files in $in_folder$
     files = list_files_in_directory(in_folder)
@@ -260,7 +259,6 @@ def success_Ntrials(metric_ms, result_dir, videos):
     plt.xlabel('Top K Proposal Examined')
     plt.ylabel('PV-300')
     plt.ylim([0, 100])
-    # locs, labels = plt.xticks()
     plt.xticks(np.arange(1, topK + 1, step=1)) 
     ax.yaxis.set_major_formatter(mtick.PercentFormatter())
     plt.tight_layout()

@@ -14,7 +14,7 @@ from utils import csv_read
 FPS = settings["FPS"]
 FRAME_INTERVAL = settings["FRAME_INTERVAL"]
 sample_counts = settings["sample_counts"]
-
+flow_path = settings["flow_path"]
 
 def load_start_time(start_time_file, vid):
     df_start_time = csv_read(start_time_file).set_index("video_name")
@@ -201,7 +201,7 @@ def seg_smk_video(
     sensors = ["ACCELEROMETER_X", "ACCELEROMETER_Y", "ACCELEROMETER_Z"]
     sensor_col_header = ["accx", "accy", "accz"]
     flow_path = os.path.join(
-        "../../data/flow_pwc/sub{}".format(subject), vid_name + ".pkl"
+        flow_path, "sub{}".format(subject), vid_name + ".pkl"
     )
 
     # load start end time

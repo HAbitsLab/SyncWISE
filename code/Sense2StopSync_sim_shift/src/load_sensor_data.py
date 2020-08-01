@@ -15,6 +15,14 @@ from settings import settings
 # ######################################################################################################################
 
 def unixtime_to_datetime(unixtime):
+    """
+
+    Args:
+        unixtime:
+
+    Returns:
+
+    """
     if len(str(abs(unixtime))) == 13:
         return datetime.utcfromtimestamp(unixtime / 1000). \
             replace(tzinfo=pytz.utc).astimezone(settings["TIMEZONE"])
@@ -32,6 +40,15 @@ def datetime_to_filename(dt):
 
 
 def list_date_folders_hour_files(start, end):
+    """
+
+    Args:
+        start:
+        end:
+
+    Returns:
+
+    """
     """
     param interval: python datetime format or unixtimestamp (int)
     """
@@ -51,6 +68,19 @@ def list_date_folders_hour_files(start, end):
 
 
 def read_data_datefolder_hourfile(resample_path, subject, device, sensor, start_time, end_time):
+    """
+
+    Args:
+        resample_path:
+        subject:
+        device:
+        sensor:
+        start_time:
+        end_time:
+
+    Returns:
+
+    """
     """
     param interval: python unixtimestamp
     """
