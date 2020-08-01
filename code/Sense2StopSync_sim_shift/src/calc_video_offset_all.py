@@ -1,6 +1,7 @@
 import os
 import sys
 from collections import Counter
+import pickle
 
 import numpy as np
 import pandas as pd
@@ -15,7 +16,7 @@ from drift_confidence import drift_confidence
 
 FPS = settings["FPS"]
 KERNEL_VAR = settings["kernel_var"]
-
+temp_dir = settings["TEMP_DIR"]
 
 def calc_win_offset_all(
         df_dataset_all,
@@ -25,7 +26,8 @@ def calc_win_offset_all(
         kde_num_offset,
         qualified_window_num,
         pca,
-        fps
+        fps,
+        draw=0
 ):
     """
 
@@ -121,11 +123,14 @@ def print_offset_summary(offset_df):
 
 
 def calc_video_offset_all(
-        df_dataset_all,
-        info_dataset_all,
+        # df_dataset_all,
+        # info_dataset_all,
         window_size_sec,
         stride_sec,
+        offset_sec,
         kde_num_offset,
+        kde_max_offset,
+        window_criterion,
         qualified_window_num,
         save_dir,
         pca,
@@ -136,6 +141,9 @@ def calc_video_offset_all(
     """
 
     Args:
+        kde_max_offset:
+        window_criterion:
+        offset_sec:
         df_dataset_all:
         info_dataset_all:
         window_size_sec:
@@ -151,15 +159,23 @@ def calc_video_offset_all(
     Returns:
 
     """
-    title_suffix = "_win{}_str{}_offset{}_rdoffset{}_maxoffset{}_wincrt{}_pca_sigma{}".format(
+    title_suffix = "_win{}_str{}_offset{}_rdoffset{}_maxoffset{}_wincrt{}".format(
         window_size_sec,
         stride_sec,
         offset_sec,
         kde_num_offset,
         kde_max_offset,
         window_criterion,
-        kernel_var,
     )
+    print('\noffset_sec', offset_sec, '\n')
+    with open(
+            os.path.join(temp_dir, "all_video" + title_suffix + "_df_dataset.pkl"), "rb"
+    ) as handle:
+        df_dataset_all = pickle.load(handle)
+    with open(
+            os.path.join(temp_dir, "all_video" + title_suffix + "_info_dataset.pkl"), "rb"
+    ) as handle:
+        info_dataset_all = pickle.load(handle)
     scores_dataframe = calc_win_offset_all(
         df_dataset_all=df_dataset_all,
         info_dataset_all=info_dataset_all,
@@ -169,6 +185,7 @@ def calc_video_offset_all(
         qualified_window_num=qualified_window_num,
         pca=pca,
         fps=fps,
+        draw=0
     )
     scores_dataframe.to_csv(save_dir + '/conf_offset_win' + title_suffix + '.csv', index=None)
 
@@ -183,8 +200,6 @@ def calc_video_offset_all(
         folder="figures/MD2K_cross_corr" + title_suffix,
     )
     offset_df = offset_df.sort_values(by=["offset"])
-    print(offset_df)
-    print_offset_summary(offset_df)
     offset_df.to_csv(
         save_dir + "/final_result_per_video" + title_suffix + ".csv", index=None
     )

@@ -43,7 +43,10 @@ if __name__ == "__main__":
         info_dataset_all,
         window_size_sec,
         stride_sec,
+        offset_sec,
         kde_num_offset,
+        kde_max_offset,
+        window_criterion,
         qualified_window_num=10*kde_num_offset, 
         save_dir='./result/summary_ablation',
         pca=1
