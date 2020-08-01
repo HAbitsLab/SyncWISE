@@ -25,7 +25,7 @@ def read_batch_final_results(
     window_criterion,
     folder='./result/',
 ):
-    title_suffix = "_win{}_str{}_offset{}_rdoffset{}_maxoffset{}_wincrt{}_pca_sigma500".format(
+    title_suffix = "_win{}_str{}_offset{}_rdoffset{}_maxoffset{}_wincrt{}".format(
         window_size_sec,
         stride_sec,
         offset_sec,
@@ -88,7 +88,7 @@ def summarize_xaxis_batch_to_csv(summ_path):
             kde_num_offset,
             offset_sec,
         ) = line.split()
-        title_suffix = "_win{}_str{}_offset{}_rdoffset{}_maxoffset{}_wincrt{}_pca_sigma500".format(
+        title_suffix = "_win{}_str{}_offset{}_rdoffset{}_maxoffset{}_wincrt{}".format(
             window_size_sec,
             stride_sec,
             offset_sec,
@@ -159,7 +159,7 @@ def summarize_pca_batch_to_csv(summ_path):
             kde_num_offset,
             offset_sec,
         ) = line.split()
-        title_suffix = "_win{}_str{}_offset{}_rdoffset{}_maxoffset{}_wincrt{}_pca_sigma500".format(
+        title_suffix = "_win{}_str{}_offset{}_rdoffset{}_maxoffset{}_wincrt{}".format(
             window_size_sec,
             stride_sec,
             offset_sec,

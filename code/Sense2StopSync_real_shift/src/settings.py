@@ -29,3 +29,4 @@ settings["kde_max_offset"] = 5000
 settings["kde_num_offset"] = 20
 settings["sample_counts"] = 7
 settings["val_set_ratio"] = 0.2
+settings["kernel_var"] = 500

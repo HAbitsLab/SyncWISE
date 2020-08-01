@@ -430,8 +430,8 @@ def summarize_ablation_augmentation_numoffset():
     fig.savefig(
         os.path.join(
             "./figures/",
-            "ablation_result_num_offset_win{}_maxoffset{}_offset{}.eps".format(
-                window_size_sec, kde_max_offset, offset_sec
+            "ablation_result_num_offset_win{}_maxoffset{}.eps".format(
+                window_size_sec, kde_max_offset
             ),
         ),
         format="eps"
