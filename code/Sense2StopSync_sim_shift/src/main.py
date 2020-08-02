@@ -23,17 +23,17 @@ if __name__ == "__main__":
     kde_max_offset = int(kde_max_offset)
     window_criterion = float(window_criterion)
 
-    # # segment videos into windows
-    # df_dataset_all, info_dataset_all = segment_video_all(
-    #     window_size_sec,
-    #     stride_sec,
-    #     offset_sec,
-    #     kde_num_offset,
-    #     kde_max_offset,
-    #     window_criterion,
-    #     data_dir,
-    #     starttime_file,
-    # )
+    # segment videos into windows
+    df_dataset_all, info_dataset_all = segment_video_all(
+        window_size_sec,
+        stride_sec,
+        offset_sec,
+        kde_num_offset,
+        kde_max_offset,
+        window_criterion,
+        data_dir,
+        starttime_file,
+    )
 
     # load_windows(
     #     window_size_sec,

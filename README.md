@@ -55,6 +55,8 @@ In folder `code/Sense2StopSync_sim_shift`: Run cmd `sh run.sh 7` (if run this ba
 
 <!--4. `summarize.py`: generate final result or sensitivity study result summary.-->
 
+### Result:
+
 The result can be found in `result/batch_result_pca_sigma500_flow_w_random.csv` and `result/batch_result_xx_sigma500_flow_w_random.csv`.
 
 
@@ -72,8 +74,10 @@ Run cmd `sh run_max_offset.sh 7`. sanity check to find best parameter max offset
 
 <!--3. `summarize.py`: generate final result or sensitivity study result summary.-->
 
+### Result:
 
-The result can be found in `./figures/ablation_result_num_offset_win10_maxoffset3000_offset.eps`.
+
+The result can be found in `./figures/ablation_result_num_offset_win10_maxoffset3000_offset.eps` and .
 
 
 ## Sense2StopSync (real shift)
@@ -87,7 +91,9 @@ In folder `Sense2StopSync_real_shift`: Run cmd `sh run.sh 7` (if run this bash f
 > sh run.sh 7
 <!--2. `summarize.py`: generate final result summary.-->
 
-The result can be found in folder `figures`
+### Result:
+
+The result can be found in `Sense2StopSync_real_shift\cdf_PV300_1.eps` (all test videos) and `Sense2StopSync_real_shift\cdf_PV300_2.eps` (without low quality test videos).
 
 
 ## CMU\_MMAC
