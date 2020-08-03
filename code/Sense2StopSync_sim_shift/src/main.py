@@ -4,10 +4,13 @@ from segment_video_all import segment_video_all
 from calc_video_offset_all import calc_video_offset_all
 from settings import settings
 
+import random
+
 if __name__ == "__main__":
     starttime_file = settings['STARTTIME_TEST_FILE']
     data_dir = settings["TEMP_DIR"]
     stride_sec = settings["STRIDE_SEC"]
+    random.seed(0)
 
     parameter_str = sys.argv[1]
     (
