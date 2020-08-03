@@ -28,3 +28,4 @@ settings["STRIDE_SEC"] = 1
 settings["kernel_var"] = 500
 settings["sample_counts"] = 7
 settings["video_max_len"] = (17*60+43)*1000
+settings["val_set_ratio"] = 0.2
