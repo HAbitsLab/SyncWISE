@@ -20,7 +20,6 @@ from settings import settings
 
 CUBIC = 1 # Resampling method. 1: cubic spline, 0: linear interpolation
 
-FPS = settings["FPS"]
 FRAME_INTERVAL = settings["FRAME_INTERVAL"]
 
 startime_file = settings["STARTTIME_FILE"]
@@ -166,7 +165,7 @@ def baseline_MIT_video_MD2K(window_size_sec, stride_sec, num_offsets, max_offset
             # load optical flow data and assign unixtime to each frame
             motion = pickle.load(open(vid_path, 'rb'))
             # step = 1000.0/30.0
-            step = 1000.0/FPS
+            step = 1000.0/fps
             length = motion.shape[0]
             timestamps_int = np.arange(start_time, start_time + length * step, step).astype(int)
 
@@ -229,10 +228,6 @@ def baseline_MIT_video_MD2K(window_size_sec, stride_sec, num_offsets, max_offset
                 df_resample = pd.merge_asof(df_list[1], df_list[0], on='time', tolerance=pd.Timedelta("30ms"), \
                 direction='nearest').set_index('time')
 
-            df_resample = df_resample.dropna(how='any')
-            df_resample['accx'] -= df_resample['accx'].mean()
-            df_resample['accy'] -= df_resample['accy'].mean()
-            df_resample['accz'] -= df_resample['accz'].mean()
             df_resample['diff_flowx'] = df_resample['flowx'].diff()
             df_resample['diff_flowy'] = df_resample['flowy'].diff()
             
