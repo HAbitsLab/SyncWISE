@@ -18,6 +18,8 @@ from load_sensor_data import read_data_datefolder_hourfile
 from settings import settings
 
 
+FPS = settings["FPS"]
+FRAME_INTERVAL = settings["FRAME_INTERVAL"]
 
 startime_file = settings["STARTTIME_FILE"]
 
@@ -99,7 +101,7 @@ def baseline_MIT_video_MD2K(window_size_sec, stride_sec, num_offsets, max_offset
     title_suffix = '_win{}_str{}_offset{}_rdoffset{}_maxoffset{}_wincrt{}'.\
         format(window_size_sec, stride_sec, offset_sec, num_offsets, max_offset, window_criterion)
     data_dir = './'
-        
+
     df_start_time = pd.read_csv(settings['STARTTIME_TEST_FILE'])
     qualify_videos  = df_start_time["video_name"].tolist()
     print(qualify_videos)
@@ -144,7 +146,7 @@ def baseline_MIT_video_MD2K(window_size_sec, stride_sec, num_offsets, max_offset
         for f in flow_files:
             vid_name = f[:-4]
             if vid_name not in qualify_videos:
-                print(vid_name, 'flow file not exist')
+                # print(vid_name, 'flow file not exist')
                 continue
             vid_path = os.path.join(flow_dir, vid_name+'.pkl')
             out_path = os.path.join(data_dir, 'figures/figures_MIT_pca/corr_flow_averaged_acc_{}.png'.format(vid_name))
@@ -154,14 +156,15 @@ def baseline_MIT_video_MD2K(window_size_sec, stride_sec, num_offsets, max_offset
             offset = 0
             df_start_time = pd.read_csv(start_time_file, index_col='video_name')
             if vid_name not in df_start_time.index:
-                print(vid_name, 'not exist in starttime csv')
+                # print(vid_name, 'not exist in starttime csv')
                 continue
             print(vid_name)
             start_time = df_start_time.loc[vid_name]['start_time']+offset
             
             # load optical flow data and assign unixtime to each frame
             motion = pickle.load(open(vid_path, 'rb'))
-            step = 1000.0/30.0
+            # step = 1000.0/30.0
+            step = 1000.0/FPS
             length = motion.shape[0]
             timestamps_int = np.arange(start_time, start_time + length * step, step).astype(int)
 
@@ -199,6 +202,13 @@ def baseline_MIT_video_MD2K(window_size_sec, stride_sec, num_offsets, max_offset
             for S, col in zip(SENSORS, sensor_col_header):
                 df = read_data_datefolder_hourfile(RAW_PATH, sub, DEVICE, S, fixedTimeCol[0], fixedTimeCol[-1])
                 df = df[['time', col]]
+
+                # df["time"] = pd.to_datetime(df["time"], unit="ms")
+                # df = df.set_index("time")
+                # df_sensor_resample = df.resample(FRAME_INTERVAL).mean()  
+                # # FRAME_INTERVAL as 0.03336707S is the most closest value to 1/29.969664 pandas accepts
+                # df_sensor_resample = df_sensor_resample.interpolate(method="spline", order=3) # cubic spline interpolation
+
                 df_sensor_resample = resample(df, 'time', samplingRate=0,
                                               gapTolerance=200, fixedTimeColumn=fixedTimeCol).set_index('time')
                 df_list.append(df_sensor_resample)
