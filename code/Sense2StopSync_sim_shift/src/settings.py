@@ -15,10 +15,10 @@ settings["STARTTIME_TEST_FILE"] = "start_time_test.csv"
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "../../../Sense2StopSync/")
 settings["DATA_DIR"] = DATA_DIR
-settings["reliability_resample_path"] = os.path.join(DATA_DIR, "RESAMPLE200/wild/") #TODO: last step to change name to RESAMPLE
-settings["raw_path"] = os.path.join(DATA_DIR, "RAW/wild/") # TODO: remove wild
+settings["reliability_resample_path"] = os.path.join(DATA_DIR, "RESAMPLE200/wild/")
+# TODO: last step to change name to RELIABILITY
+settings["raw_path"] = os.path.join(DATA_DIR, "RAW/wild/")  # TODO: remove wild
 settings["flow_path"] = os.path.join(DATA_DIR, "flow_pwc/")
-# settings["qualified_window_num"] = 200
 settings["qualified_window_num"] = 10
 settings["window_size_sec"] = 10 
 settings["window_criterion"] = 0.8

@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('Agg')  # to run on linux server
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 
