@@ -10,7 +10,7 @@ startime_file = settings["STARTTIME_FILE"]
 
 videos_df = pd.read_csv(startime_file)
 len_all= len(videos_df)
-len_val= int(round(len_all*0.2))
+len_val= int(round(len_all*settings["val_set_ratio"]))
 random.seed(80)
 # indices for validation set (sensitivity study)
 val = random.sample(range(0, len_all), len_val)

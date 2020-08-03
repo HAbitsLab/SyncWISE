@@ -18,6 +18,8 @@ from load_sensor_data import read_data_datefolder_hourfile
 from settings import settings
 
 
+CUBIC = 1 # Resampling method. 1: cubic spline, 0: linear interpolation
+
 FPS = settings["FPS"]
 FRAME_INTERVAL = settings["FRAME_INTERVAL"]
 
@@ -72,7 +74,7 @@ def baseline_MIT_video_MD2K(window_size_sec, stride_sec, num_offsets, max_offset
     # #subjects = ['202', '205', '211', '235', '236', '238', '240', '243']
     # dir_path = os.path.dirname(os.path.realpath(__file__))
     # # df_start_time = pd.read_csv(settings['STARTTIME_TEST_FILE'])    
-    # # df_start_time = csv_read(os.path.join(dir_path, '../../data/start_time.csv')).set_index('video_name')
+    # # df_start_time = csv_read(os.path.join(dir_path, '../../Sense2StopSync/start_time.csv')).set_index('video_name')
     # df_start_time = csv_read(settings['STARTTIME_TEST_FILE']).set_index('video_name')
     # video_names = df_start_time.index.tolist()
     # subjects = list(set([vid.split(' ')[0] for vid in video_names]))    
@@ -129,12 +131,12 @@ def baseline_MIT_video_MD2K(window_size_sec, stride_sec, num_offsets, max_offset
         SENSORS = ['ACCELEROMETER_X', 'ACCELEROMETER_Y', 'ACCELEROMETER_Z']
         sensor_col_header = ['accx', 'accy', 'accz']
 
-        # start_time_file = os.path.join(dir_path, '../../data/start_time.csv')
+        # start_time_file = os.path.join(dir_path, '../../Sense2StopSync/start_time.csv')
         start_time_file = settings["STARTTIME_TEST_FILE"]
 
-        flow_dir = os.path.join(dir_path, '../../data/flow_pwc/sub{}'.format(sub))
-        RAW_PATH = os.path.join(dir_path, '../../data/RAW/wild/')
-        RESAMPLE_PATH = os.path.join(dir_path, '../../data/RESAMPLE200/wild/')
+        flow_dir = os.path.join(dir_path, '../../Sense2StopSync/flow_pwc/sub{}'.format(sub))
+        RAW_PATH = os.path.join(dir_path, '../../Sense2StopSync/RAW/wild/')
+        RESAMPLE_PATH = os.path.join(dir_path, '../../Sense2StopSync/RESAMPLE200/wild/')
 
         flow_files = [f for f in os.listdir(flow_dir) if os.path.isfile(os.path.join(flow_dir, f))]
         flow_files = [f for f in flow_files if f.endswith('.pkl')]
@@ -195,6 +197,9 @@ def baseline_MIT_video_MD2K(window_size_sec, stride_sec, num_offsets, max_offset
                 # continue
 
             fixedTimeCol = df_flow['time'].values
+
+            if CUBIC:
+                df_flow['time'] = pd.to_datetime(df_flow['time'], unit='ms')
             df_flow = df_flow[['flowx', 'flowy', 'time']].set_index('time')
             
             # extract the data of consecutive chunk and resample according to video frame timestamp
@@ -203,18 +208,27 @@ def baseline_MIT_video_MD2K(window_size_sec, stride_sec, num_offsets, max_offset
                 df = read_data_datefolder_hourfile(RAW_PATH, sub, DEVICE, S, fixedTimeCol[0], fixedTimeCol[-1])
                 df = df[['time', col]]
 
-                # df["time"] = pd.to_datetime(df["time"], unit="ms")
-                # df = df.set_index("time")
-                # df_sensor_resample = df.resample(FRAME_INTERVAL).mean()  
-                # # FRAME_INTERVAL as 0.03336707S is the most closest value to 1/29.969664 pandas accepts
-                # df_sensor_resample = df_sensor_resample.interpolate(method="spline", order=3) # cubic spline interpolation
+                if CUBIC == 0:
+                    df_sensor_resample = resample(df, 'time', samplingRate=0,
+                                                  gapTolerance=200, fixedTimeColumn=fixedTimeCol).set_index('time')
+                else:                        
+                    df["time"] = pd.to_datetime(df["time"], unit="ms")
+                    df = df.set_index("time")
+                    df_sensor_resample = df.resample(FRAME_INTERVAL).mean()  
+                    # FRAME_INTERVAL as 0.03336707S is the most closest value to 1/29.969664 pandas accepts
+                    df_sensor_resample = df_sensor_resample.interpolate(method="spline", order=3) # cubic spline interpolation
 
-                df_sensor_resample = resample(df, 'time', samplingRate=0,
-                                              gapTolerance=200, fixedTimeColumn=fixedTimeCol).set_index('time')
                 df_list.append(df_sensor_resample)
+            
+            if CUBIC == 0:
+                df_list.append(df_flow)
+                df_resample = pd.concat(df_list, axis=1)
+            else:
+                df_sensors = pd.concat(df_list, axis=1)
+                df_list = [df_sensors, df_flow]
+                df_resample = pd.merge_asof(df_list[1], df_list[0], on='time', tolerance=pd.Timedelta("30ms"), \
+                direction='nearest').set_index('time')
 
-            df_list.append(df_flow)
-            df_resample = pd.concat(df_list, axis=1)
             df_resample = df_resample.dropna(how='any')
             df_resample['accx'] -= df_resample['accx'].mean()
             df_resample['accy'] -= df_resample['accy'].mean()
@@ -318,7 +332,7 @@ if __name__ == "__main__":
     # else:
     #     offset_secs = [float(offset_sec)]
     # stride_sec = 1
-    use_PCA = 0
+    use_PCA = 1
     print("if use PCA or use x-axis: (1: PCA; 0: x-axis)", use_PCA)
 
     result_df = baseline_MIT_video_MD2K(window_size_sec, stride_sec, num_offsets, max_offset, window_criterion, offset_sec=offset_sec, plot=plot, use_PCA=use_PCA)
