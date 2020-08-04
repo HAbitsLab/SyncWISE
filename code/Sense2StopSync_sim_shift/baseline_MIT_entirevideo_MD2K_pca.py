@@ -112,7 +112,7 @@ def baseline_MIT_video_MD2K(window_size_sec, stride_sec, num_offsets, max_offset
     print(len(subjects))
     fps = settings['FPS']
 
-    dir_path = '../'
+    dir_path = './'
 
     DEVICE = 'CHEST'
     SENSOR = 'ACCELEROMETER'
@@ -133,9 +133,9 @@ def baseline_MIT_video_MD2K(window_size_sec, stride_sec, num_offsets, max_offset
         # start_time_file = os.path.join(dir_path, '../../Sense2StopSync/start_time.csv')
         start_time_file = settings["STARTTIME_TEST_FILE"]
 
-        flow_dir = os.path.join(dir_path, '../../Sense2StopSync/flow_pwc/sub{}'.format(sub))
-        RAW_PATH = os.path.join(dir_path, '../../Sense2StopSync/RAW/wild/')
-        RESAMPLE_PATH = os.path.join(dir_path, '../../Sense2StopSync/RESAMPLE200/wild/')
+        flow_dir = os.path.join(dir_path, '../../data/flow_pwc/sub{}'.format(sub))
+        RAW_PATH = os.path.join(dir_path, '../../data/RAW/wild/')
+        RESAMPLE_PATH = os.path.join(dir_path, '../../data/RESAMPLE200/wild/')
 
         flow_files = [f for f in os.listdir(flow_dir) if os.path.isfile(os.path.join(flow_dir, f))]
         flow_files = [f for f in flow_files if f.endswith('.pkl')]
@@ -228,22 +228,18 @@ def baseline_MIT_video_MD2K(window_size_sec, stride_sec, num_offsets, max_offset
                 df_resample = pd.merge_asof(df_list[1], df_list[0], on='time', tolerance=pd.Timedelta("30ms"), \
                 direction='nearest').set_index('time')
 
-            df_resample['diff_flowx'] = df_resample['flowx'].diff()
-            df_resample['diff_flowy'] = df_resample['flowy'].diff()
             
             # two method to fill na values
             # 1 fill with 0
-            df_resample = df_resample.fillna(0)
+            #df_resample = df_resample.fillna(0)
 
             # 2 ffill
-            # l1 = len(df_resample)
-            # df_resample = df_resample.fillna(method='ffill')
-            # df_resample = df_resample.dropna(how='any')
-            # l2 = len(df_resample)
-            # # df_resmaple =df_resample.fillna(method='bfill')
-            # print(l1, l2)
-            # assert l2 + 1 == l1
+            df_resample = df_resample.fillna(method='ffill')
+            df_resample = df_resample.dropna(how='any')
 
+            df_resample['diff_flowx'] = df_resample['flowx'].diff()
+            df_resample['diff_flowy'] = df_resample['flowy'].diff()
+            df_resample = df_resample.dropna(how='any')
             pca_sensor = PCA(n_components=1)
             df_resample[['accx', 'accy', 'accz']] -= df_resample[['accx', 'accy', 'accz']].mean()
             df_resample['acc_pca'] = pca_sensor.fit_transform(df_resample[['accx', 'accy', 'accz']].to_numpy())
