@@ -331,4 +331,11 @@ if __name__ == "__main__":
     # summarize_batch_result()
 
 
+    use_PCA = 0
+    print("if use PCA or use x-axis: (1: PCA; 0: x-axis)", use_PCA)
+
+    result_df = baseline_MIT_video_MD2K(window_size_sec, stride_sec, num_offsets, max_offset, window_criterion, offset_sec=offset_sec, plot=plot, use_PCA=use_PCA)
+    print(result_df)
+    # summarize_batch_result()
+
 
