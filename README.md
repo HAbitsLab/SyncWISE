@@ -57,7 +57,7 @@ In folder `code/Sense2StopSync_sim_shift`: Run cmd `sh run.sh 7` (if run this ba
 
 ### Result:
 
-The result can be found in `result/batch_result_pca_sigma500_flow_w_random.csv` and `result/batch_result_xx_sigma500_flow_w_random.csv`.
+The final result can be found in `final/syncwise_xx_final_result.txt` and `final/syncwise_pca_final_result.txt`.
 
 
 
@@ -93,7 +93,7 @@ In folder `Sense2StopSync_real_shift`: Run cmd `sh run.sh 7` (if run this bash f
 
 ### Result:
 
-The result can be found in `Sense2StopSync_real_shift\cdf_PV300_1.eps` (all test videos) and `Sense2StopSync_real_shift\cdf_PV300_2.eps` (without low quality test videos).
+The result can be found in `final/final_result.txt`. Figures are `Sense2StopSync_real_shift\cdf_PV300_1.eps` (all test videos) and `Sense2StopSync_real_shift\cdf_PV300_2.eps` (without low quality test videos).
 
 
 ## CMU\_MMAC

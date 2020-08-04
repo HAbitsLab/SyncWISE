@@ -240,10 +240,10 @@ def success_Ntrials(metric_ms, result_dir, videos):
     print('Failed: ', failed, failed/(total - no_file))
     print('no file: ', no_file)
     print('num:', len(videos))
-    print('One time PV{}: '.format(metric_ms), success_1/(total - no_file))
-    print('Three time PV{}: '.format(metric_ms), (success_1 + success_2 + success_3)/(total - no_file))
-    print('Five time PV{}:  '.format(metric_ms), (success_1 + success_2 + success_3 + success_4 + success_5)/(total - no_file))
-    print('Ten time PV{}:   '.format(metric_ms), 1 - failed/(total - no_file), '\n\n')
+    print('One time PV{}:    '.format(metric_ms), success_1/(total - no_file))
+    print('Three times PV{}: '.format(metric_ms), (success_1 + success_2 + success_3)/(total - no_file))
+    print('Five times PV{}:  '.format(metric_ms), (success_1 + success_2 + success_3 + success_4 + success_5)/(total - no_file))
+    print('Ten times PV{}:   '.format(metric_ms), 1 - failed/(total - no_file), '\n\n')
 
     # plot and save cumulative distribution function (CDF) 
     topK = 10
@@ -262,14 +262,19 @@ def success_Ntrials(metric_ms, result_dir, videos):
     plt.xticks(np.arange(1, topK + 1, step=1)) 
     ax.yaxis.set_major_formatter(mtick.PercentFormatter())
     plt.tight_layout()
-    plt.savefig('cdf_PV{}_{}.eps'.format(metric_ms, total), dpi=fig.dpi)
+    plt.savefig('figures/cdf_PV{}_{}.eps'.format(metric_ms, total), dpi=fig.dpi)
     # plt.show()
+
+    with open("final/final_result.txt", 'w') as f:
+        for i in range(10):
+            print('{} time(s) PV{}: {}'.format(i+1, metric_ms, Y_cdf[i]), file=f)
+            print('{} time(s) PV{}: {}'.format(i+1, metric_ms, Y_cdf[i]))
 
 
 if __name__ == '__main__':
     orig_shift_file = settings["ORIGIN_SHIFT_FILE"]
     # result_dir = "../final_result_real/final_all_1st"
-    result_dir = "final"
+    result_dir = "final"  # TODO: Change result folder to result, same as in sim_offset
     
     summarize_shift_all_videos(result_dir)
     
