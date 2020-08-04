@@ -61,6 +61,8 @@ if __name__ == '__main__':
     load_df = True
     verbose = True
     draw = True
+    random.seed(0)
+    np.random.seed(0)
     sensor_dict = {'2794': 'Left Arm', '2795': 'Back', '2796': 'Left Leg', '3261': 'Right Leg', '3337': 'Right Arm'}
     ##########################################################
     ###                   Baseline                           #
