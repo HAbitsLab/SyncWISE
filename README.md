@@ -84,3 +84,31 @@ The result can be found in `final/final_result.txt`. Figures are `Sense2StopSync
 ## CMU\_MMAC
 
 (todo)
+
+
+## Citation
+
+If you find this useful for your research, please use the following.
+
+```
+@article{syncwise,
+	author = {Zhang, Yun and Zhang, Shibo and Liu, Miao and Daly, Elyse and Samuel, Battalio and Kumar, Santosh and Spring, Bonnie and Rehg, James M. and Alshurafa, Nabil},
+	title = {SyncWISE: Window Induced Shift Estimation for Synchronization of Video and Accelerometry from Wearable Sensors},
+	year = {2020},
+	issue_date = {September 2020},
+	publisher = {Association for Computing Machinery},
+	address = {New York, NY, USA},
+	volume = {4},
+	number = {3},
+	url = {https://doi.org/10.1145/3411824},
+	doi = {10.1145/3411824},
+	journal = {Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.},
+	month = jun,
+	articleno = {107},
+	numpages = {27}
+}
+```
+
+## Acknowledgments
+
+We thank the anonymous reviewers for their valuable suggestions for improving the manuscript. We also thank Shahin Samiei for IRB and data management support, and Dr. Timothy Hnat and Dr. Monowar Hossain for software support. Research reported here was supported by the National Institutes of Health (NIH) under award K25DK113242 (by NIDDK) and U54EB020404 (by NIBIB) through funds provided by the trans-NIH Big Data-to-Knowledge (BD2K) initiative. We would also like to acknowledge support by the National Science Foundation (NSF) under awards CNS1915847 and CNS1823201. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the authors and do not necessarily reflect the views of the NIH or the NSF.
