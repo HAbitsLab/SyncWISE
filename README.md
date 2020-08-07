@@ -24,14 +24,17 @@ root
 │   └── syncwise
 │
 ├── Sense2StopSync
-│   ├── RAW
-│   ├── RESAMPLE
-│   └── flow_pwc
+│   ├── raw
+│   ├── reliability
+│   ├── flow_pwc
+│   └── start_time.csv
 │
 └── CMU_MMAC
-    ├── ..
-    ├── ..
-    └── ..
+    ├── opt_flow
+    ├── sensor
+    ├── video
+    ├── session_list
+    └── valid_sessions.pkl
 </pre>
 
 
@@ -39,17 +42,19 @@ root
 
 Run SyncWISE algorithm on Sense2StopSync dataset with simulated shifts.
 
-### Main result steps:
+### Steps:
 
-In folder `code/Sense2StopSync_sim_shift`: Run cmd `sh run.sh 7` (if run this bash file with 7 cores). Run on test set with random simulated shift.
+In folder `code/Sense2StopSync_sim_shift`: 
+
+Run cmd `sh run.sh 7` (if run this bash file with 7 cores). Run on test set with random simulated shift. It will take about 5 hours using 32 Intel i9-9980XE CPU @ 3.00GHz cores.
 
 > sh run.sh 7
 
-`baseline_MIT_entirevideo_MD2K.py`: baseline method using x-axis.
+`python3 baseline_MIT_entirevideo_MD2K.py`: baseline method using x-axis.
 
 > python3 baseline\_MIT\_entirevideo\_MD2K.py
 
-`baseline_MIT_entirevideo_MD2K_pca.py`: baseline method using pca.
+`python3 baseline_MIT_entirevideo_MD2K_pca.py`: baseline method using pca.
 
 > python3 baseline\_MIT\_entirevideo\_MD2K\_pca.py
 
@@ -60,40 +65,20 @@ In folder `code/Sense2StopSync_sim_shift`: Run cmd `sh run.sh 7` (if run this ba
 The final result can be found in `final/syncwise_xx_final_result.txt` and `final/syncwise_pca_final_result.txt`.
 
 
-
-### Sensitivity study result steps:
-
-In folder `code/Sense2StopSync_sim_shift`: Run cmd `sh run_num_offset.sh 7` (if run this bash file with 7 cores). Sanity check to find best parameter number of offset using validation set.
-
-> sh run\_ablation\_num\_offset.sh 7
-
-Run cmd `sh run_max_offset.sh 7`. sanity check to find best parameter max offset using validation set.
-
-
-> sh run\_ablation\_max\_offset.sh 7
-
-<!--3. `summarize.py`: generate final result or sensitivity study result summary.-->
-
-### Result:
-
-
-The result can be found in `./figures/ablation_result_num_offset_win10_maxoffset3000_offset.eps` and .
-
-
 ## Sense2StopSync (real shift)
 
 Run SyncWISE algorithm on Sense2StopSync dataset with real shifts.
 
 ### Steps:
 
-In folder `Sense2StopSync_real_shift`: Run cmd `sh run.sh 7` (if run this bash file with 7 cores). 
+In folder `Sense2StopSync_real_shift`: Run cmd `sh run.sh 7` (if run this bash file with 7 cores). It will take 10 hours using 32 Intel i9-9980XE CPU @ 3.00GHz cores. Please be patient.
 
 > sh run.sh 7
 <!--2. `summarize.py`: generate final result summary.-->
 
 ### Result:
 
-The result can be found in `final/final_result.txt`. Figures are `Sense2StopSync_real_shift\cdf_PV300_1.eps` (all test videos) and `Sense2StopSync_real_shift\cdf_PV300_2.eps` (without low quality test videos).
+The result can be found in `final/final_result.txt`. Figures are `Sense2StopSync_real_shift/cdf_PV300_1.eps` (all test videos) and `Sense2StopSync_real_shift/cdf_PV300_2.eps` (without low quality test videos).
 
 
 ## CMU\_MMAC
