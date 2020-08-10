@@ -24,14 +24,17 @@ root
 │   └── syncwise
 │
 ├── Sense2StopSync
-│   ├── RAW
-│   ├── RESAMPLE
-│   └── flow_pwc
+│   ├── raw
+│   ├── reliability
+│   ├── flow_pwc
+│   └── start_time.csv
 │
 └── CMU_MMAC
-    ├── ..
-    ├── ..
-    └── ..
+    ├── opt_flow
+    ├── sensor
+    ├── video
+    ├── session_list
+    └── valid_sessions.pkl
 </pre>
 
 
@@ -39,17 +42,19 @@ root
 
 Run SyncWISE algorithm on Sense2StopSync dataset with simulated shifts.
 
-### Main result steps:
+### Steps:
 
-In folder `code/Sense2StopSync_sim_shift`: Run cmd `sh run.sh 7` (if run this bash file with 7 cores). Run on test set with random simulated shift.
+In folder `code/Sense2StopSync_sim_shift`: 
+
+Run cmd `sh run.sh 7` (if run this bash file with 7 cores). Run on test set with random simulated shift. It will take about 5 hours using 32 Intel i9-9980XE CPU @ 3.00GHz cores.
 
 > sh run.sh 7
 
-`baseline_MIT_entirevideo_MD2K.py`: baseline method using x-axis.
+`python3 baseline_MIT_entirevideo_MD2K.py`: baseline method using x-axis.
 
 > python3 baseline\_MIT\_entirevideo\_MD2K.py
 
-`baseline_MIT_entirevideo_MD2K_pca.py`: baseline method using pca.
+`python3 baseline_MIT_entirevideo_MD2K_pca.py`: baseline method using pca.
 
 > python3 baseline\_MIT\_entirevideo\_MD2K\_pca.py
 
@@ -57,27 +62,7 @@ In folder `code/Sense2StopSync_sim_shift`: Run cmd `sh run.sh 7` (if run this ba
 
 ### Result:
 
-The result can be found in `result/batch_result_pca_sigma500_flow_w_random.csv` and `result/batch_result_xx_sigma500_flow_w_random.csv`.
-
-
-
-### Sensitivity study result steps:
-
-In folder `code/Sense2StopSync_sim_shift`: Run cmd `sh run_num_offset.sh 7` (if run this bash file with 7 cores). Sanity check to find best parameter number of offset using validation set.
-
-> sh run\_ablation\_num\_offset.sh 7
-
-Run cmd `sh run_max_offset.sh 7`. sanity check to find best parameter max offset using validation set.
-
-
-> sh run\_ablation\_max\_offset.sh 7
-
-<!--3. `summarize.py`: generate final result or sensitivity study result summary.-->
-
-### Result:
-
-
-The result can be found in `./figures/ablation_result_num_offset_win10_maxoffset3000_offset.eps` and .
+The final result can be found in `final/syncwise_xx_final_result.txt` and `final/syncwise_pca_final_result.txt`.
 
 
 ## Sense2StopSync (real shift)
@@ -86,16 +71,44 @@ Run SyncWISE algorithm on Sense2StopSync dataset with real shifts.
 
 ### Steps:
 
-In folder `Sense2StopSync_real_shift`: Run cmd `sh run.sh 7` (if run this bash file with 7 cores). 
+In folder `Sense2StopSync_real_shift`: Run cmd `sh run.sh 7` (if run this bash file with 7 cores). It will take 10 hours using 32 Intel i9-9980XE CPU @ 3.00GHz cores. Please be patient.
 
 > sh run.sh 7
 <!--2. `summarize.py`: generate final result summary.-->
 
 ### Result:
 
-The result can be found in `Sense2StopSync_real_shift\cdf_PV300_1.eps` (all test videos) and `Sense2StopSync_real_shift\cdf_PV300_2.eps` (without low quality test videos).
+The result can be found in `final/final_result.txt`. Figures are `Sense2StopSync_real_shift/cdf_PV300_1.eps` (all test videos) and `Sense2StopSync_real_shift/cdf_PV300_2.eps` (without low quality test videos).
 
 
 ## CMU\_MMAC
 
 (todo)
+
+
+## Citation
+
+If you find this useful for your research, please use the following.
+
+```
+@article{syncwise,
+	author = {Zhang, Yun and Zhang, Shibo and Liu, Miao and Daly, Elyse and Samuel, Battalio and Kumar, Santosh and Spring, Bonnie and Rehg, James M. and Alshurafa, Nabil},
+	title = {SyncWISE: Window Induced Shift Estimation for Synchronization of Video and Accelerometry from Wearable Sensors},
+	year = {2020},
+	issue_date = {September 2020},
+	publisher = {Association for Computing Machinery},
+	address = {New York, NY, USA},
+	volume = {4},
+	number = {3},
+	url = {https://doi.org/10.1145/3411824},
+	doi = {10.1145/3411824},
+	journal = {Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.},
+	month = jun,
+	articleno = {107},
+	numpages = {27}
+}
+```
+
+## Acknowledgments
+
+We thank the anonymous reviewers for their valuable suggestions for improving the manuscript. We also thank Shahin Samiei for IRB and data management support, and Dr. Timothy Hnat and Dr. Monowar Hossain for software support. Research reported here was supported by the National Institutes of Health (NIH) under award K25DK113242 (by NIDDK) and U54EB020404 (by NIBIB) through funds provided by the trans-NIH Big Data-to-Knowledge (BD2K) initiative. We would also like to acknowledge support by the National Science Foundation (NSF) under awards CNS1915847 and CNS1823201. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the authors and do not necessarily reflect the views of the NIH or the NSF.

@@ -4,8 +4,10 @@ from segment_video import segment_video
 from calc_video_offset_all import calc_drift_all_windows
 from settings import settings
 
+import random
 
 if __name__ == "__main__":
+    random.seed(0)
 
     parameter_str = sys.argv[1]
     (
@@ -52,5 +54,5 @@ if __name__ == "__main__":
         kde_max_offset,
         window_criterion,
         qualified_window_num=settings["qualified_window_num"] * kde_num_offset,
-        result_dir="final"
+        result_dir="final"  # TOOD: change this to "result"
     )

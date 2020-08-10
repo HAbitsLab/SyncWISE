@@ -140,6 +140,18 @@ def summarize_xaxis_batch_to_csv(summ_path):
             + "\n"
         )
     fout.close()
+    
+    result_df = pd.read_csv(summ_path)
+    with open('final/syncwise_xaxis_final_result.txt', 'w') as f:
+        print("Ave #Win Pairs: ", result_df["ave_num_segs"].mean(), file=f)
+        print("Ave Error (ms): ", result_df["ave_offset"].mean(), file=f)
+        print("PV700 (%): ", result_df["PV700"].mean(), file=f)
+        print("PV300 (%): ", result_df["PV300"].mean(), file=f)
+
+    print("Ave #Win Pairs: ", result_df["ave_num_segs"].mean())
+    print("Ave Error (ms): ", result_df["ave_offset"].mean())
+    print("PV700 (%): ", result_df["PV700"].mean())
+    print("PV300 (%): ", result_df["PV300"].mean())
 
 
 def summarize_pca_batch_to_csv(summ_path):
@@ -216,6 +228,18 @@ def summarize_pca_batch_to_csv(summ_path):
             + "\n"
         )
     fout.close()
+
+    result_df = pd.read_csv(summ_path)
+    with open("final/syncwise_pca_final_result.txt", 'w') as f:
+        print("Ave #Win Pairs: ", result_df["ave_num_segs"].mean(), file=f)
+        print("Ave Error (ms): ", result_df["ave_offset"].mean(), file=f)
+        print("PV700 (%): ", result_df["PV700"].mean(), file=f)
+        print("PV300 (%): ", result_df["PV300"].mean(), file=f)
+
+    print("Ave #Win Pairs: ", result_df["ave_num_segs"].mean())
+    print("Ave Error (ms): ", result_df["ave_offset"].mean())
+    print("PV700 (%): ", result_df["PV700"].mean())
+    print("PV300 (%): ", result_df["PV300"].mean())
 
 
 def summarize_ablation_augmentation_maxoffset():
@@ -441,7 +465,6 @@ def summarize_ablation_augmentation_numoffset():
 
 
 if __name__ == "__main__":
-    create_folder("./final/")
     summarize_xaxis_batch_to_csv('./result/batch_result_xx_sigma500_flow_w_random.csv')
     summarize_pca_batch_to_csv('./result/batch_result_pca_sigma500_flow_w_random.csv')
     # summarize_ablation_augmentation_numoffset()
