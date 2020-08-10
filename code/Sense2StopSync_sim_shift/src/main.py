@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 
 from segment_video_all import segment_video_all
 from calc_video_offset_all import calc_video_offset_all
@@ -11,6 +12,7 @@ if __name__ == "__main__":
     data_dir = settings["TEMP_DIR"]
     stride_sec = settings["STRIDE_SEC"]
     random.seed(0)
+    np.random.seed(0)
 
     parameter_str = sys.argv[1]
     (
