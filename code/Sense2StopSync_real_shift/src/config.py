@@ -31,6 +31,7 @@ orig_shift_file = settings["ORIGIN_SHIFT_FILE"]
 orig_shift = pd.read_csv(orig_shift_file, names=["videos", "offsets"])
 orig_shift = orig_shift.set_index('videos')
 
+# load settings
 task_list_file = settings["TASK_LIST_FILE"]
 window_size_sec = settings["window_size_sec"]
 window_criterion = settings["window_criterion"]

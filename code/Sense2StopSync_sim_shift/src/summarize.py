@@ -25,6 +25,29 @@ def read_batch_final_results(
     window_criterion,
     folder='./result/',
 ):
+    """
+    Read batch final results.
+
+    Args:
+        window_size_sec: int, window size
+        stride_sec: int, stride
+        offset_sec: float, offset in seconds
+        kde_num_offset: int, KDE algorithm number of offset
+        kde_max_offset: int, KDE algorithm max offset
+        window_criterion: float, window criterion
+        folder: str
+
+    Returns:
+        float, ave offset
+        float, PV1000
+        float, PV700
+        float, PV300
+        float, ave_conf
+        int, num of videos
+        int, ave_num_segments
+        float, confidence
+
+    """
     title_suffix = "_win{}_str{}_offset{}_rdoffset{}_maxoffset{}_wincrt{}".format(
         window_size_sec,
         stride_sec,
@@ -72,6 +95,16 @@ def read_batch_final_results(
 
 
 def summarize_xaxis_batch_to_csv(summ_path):
+    """
+    summarize xaxis batch and save to csv
+
+    Args:
+        summ_path: str, summary path
+
+    Returns:
+        None
+
+    """
     file_path = "./file_list_random.txt"
     stride_sec = 1
     with open(file_path) as f:
@@ -155,6 +188,16 @@ def summarize_xaxis_batch_to_csv(summ_path):
 
 
 def summarize_pca_batch_to_csv(summ_path):
+    """
+    summarize pca batch and save to csv
+
+    Args:
+        summ_path: str, summary path
+
+    Returns:
+        None
+
+    """
     file_path = "./file_list_random.txt"
     stride_sec = 1
     with open(file_path) as f:
@@ -241,227 +284,227 @@ def summarize_pca_batch_to_csv(summ_path):
     print("PV700 (%): ", result_df["PV700"].mean())
     print("PV300 (%): ", result_df["PV300"].mean())
 
-
-def summarize_ablation_augmentation_maxoffset():
-    window_size_sec = 10
-    stride_sec = 1
-    kde_num_offset = 20
-    window_criterion = 0.8
-    offset_secs = [0.0, 2.0, 4.0]
-    kde_max_offsets = [2000, 4000, 6000, 8000, 10000]
-    kde_max_offset_list = []
-    ave_offset_list = []
-    PV1000_list = []
-    PV700_list = []
-    PV300_list = []
-    ave_conf_list = []
-    ave_num_segs_list = []
-    first_time_flag = 1
-
-    latex = "./final/ablation_maxoffset_result_win{}_str{}_wincrt{}_pca_sigma500_latex.txt".format(
-        window_size_sec, stride_sec, window_criterion
-    )
-    f = open(latex, "w+")
-
-    for offset_sec in offset_secs:
-        for kde_max_offset in kde_max_offsets:
-            (
-                ave_offset,
-                PV1000,
-                PV700,
-                PV300,
-                ave_conf,
-                num_videos,
-                ave_num_segs,
-                conf,
-            ) = read_batch_final_results(
-                window_size_sec,
-                stride_sec,
-                offset_sec,
-                kde_num_offset,
-                kde_max_offset,
-                window_criterion,
-            )
-            if first_time_flag:
-                last_num_videos = num_videos
-            else:
-                assert last_num_videos == num_videos
-                last_num_videos = num_videos
-
-            kde_max_offset_list.append(kde_max_offset)
-            ave_offset_list.append(ave_offset)
-            PV1000_list.append(PV1000)
-            PV700_list.append(PV700)
-            PV300_list.append(PV300)
-            ave_conf_list.append(ave_conf)
-            ave_num_segs_list.append(ave_num_segs)
-            f.write(
-                " & {} & {} & {} & {} & {} & {}\\\ \n".format(
-                    offset_sec,
-                    int(kde_max_offset / 1000),
-                    int(ave_offset),
-                    round(PV700, 2),
-                    round(PV300, 2),
-                    int(ave_conf),
-                )
-            )
-
-        summ_path = "./final/ablation_max_offset_result_win{}_str{}_offset{}_rdoffset{}_wincrt{}_pca_sigma500_{}videos.csv".format(
-            window_size_sec,
-            stride_sec,
-            offset_sec,
-            kde_num_offset,
-            window_criterion,
-            num_videos,
-        )
-        data = {
-            "kde_max_offset": kde_max_offset_list,
-            "ave_offset": ave_offset_list,
-            "PV1000": PV1000_list,
-            "PV700": PV700_list,
-            "PV300": PV300_list,
-            "ave_num_segs": ave_num_segs_list,
-        }
-        df = pd.DataFrame(
-            data,
-            columns=[
-                "kde_max_offset",
-                "ave_offset",
-                "PV1000",
-                "PV700",
-                "PV300",
-                "ave_num_segs",
-            ],
-        )
-        df.to_csv(summ_path, index=None)
-
-        df_plot = df[["kde_max_offset", "ave_offset"]]
-        fig, ax = plt.subplots()
-        ax.plot(
-            df_plot["kde_max_offset"] / 1000, df_plot["ave_offset"] / 1000
-        )
-        ax.set_xlabel("max range of random offset in wKDE / sec", fontsize=14)
-        ax.set_ylabel("average absolute error / sec", fontsize=14)
-        plt.grid()
-        fig.savefig(
-            os.path.join(
-                "./figures/",
-                "ablation_result_augmentation_win{}_ave_offset{}.eps".format(
-                    window_size_sec, offset_sec
-                ),
-            ),
-            format="eps",
-            dpi=100,
-            bbox_inches="tight",
-        )
-    f.close()
-    f = open(latex, "r")
-    print(f.read())
-
-
-def summarize_ablation_augmentation_numoffset():
-    window_size_sec = 10
-    stride_sec = 1
-    window_criterion = 0.8
-    kde_max_offset = 3000
-    offset_secs = [0.0, 2.0, 4.0]
-    kde_num_offsets = [1, 20, 40, 60, 80, 100]
-    first_time_flag = 1
-
-    my_dpi = 100
-    fig = plt.figure(figsize=(500 / my_dpi, 300 / my_dpi))
-    ax = fig.add_subplot(111)
-
-    for offset_sec in offset_secs:
-        ave_offset_list = []
-        PV1000_list = []
-        PV700_list = []
-        PV300_list = []
-        ave_conf_list = []
-        ave_num_segs_list = []
-        for kde_num_offset in kde_num_offsets:
-            (
-                ave_offset,
-                PV1000,
-                PV700,
-                PV300,
-                ave_conf,
-                num_videos,
-                ave_num_segs,
-                conf,
-            ) = read_batch_final_results(
-                window_size_sec,
-                stride_sec,
-                offset_sec,
-                kde_num_offset,
-                kde_max_offset,
-                window_criterion,
-            )
-            if first_time_flag:
-                last_num_videos = num_videos
-            else:
-                assert last_num_videos == num_videos
-                last_num_videos = num_videos
-            if ave_offset:
-                ave_offset_list.append(ave_offset)
-                PV1000_list.append(PV1000)
-                PV700_list.append(PV700)
-                PV300_list.append(PV300)
-                ave_conf_list.append(ave_conf)
-                ave_num_segs_list.append(ave_num_segs)
-
-        summ_path = "./result/ablation_num_offset_result_win{}_str{}_offset{}_max_offset{}_wincrt{}_pca_sigma500_{}videos.csv".format(
-            window_size_sec,
-            stride_sec,
-            offset_sec,
-            kde_max_offset,
-            window_criterion,
-            num_videos,
-        )
-        data = {
-            "kde_num_offset": kde_num_offsets,
-            "ave_offset": ave_offset_list,
-            "PV1000": PV1000_list,
-            "PV700": PV700_list,
-            "PV300": PV300_list,
-            "ave_num_segs": ave_num_segs_list,
-        }
-        df = pd.DataFrame(
-            data,
-            columns=[
-                "kde_num_offset",
-                "ave_offset",
-                "PV1000",
-                "PV700",
-                "PV300",
-                "ave_num_segs",
-            ],
-        )
-        df.to_csv(summ_path, index=None)
-
-        df_plot = df[["kde_num_offset", "ave_offset"]]
-        ax.plot(
-            df_plot["kde_num_offset"],
-            df_plot["ave_offset"],
-            label="input shift: {}s".format(offset_sec),
-        )
-
-    ax.set_xlabel("augmentation ratio in wKDE", fontsize=14)
-    ax.set_ylabel("average error / ms", fontsize=14)
-    ax.set_xticks([1, 20, 40, 60, 80, 100])
-    plt.grid()
-    plt.tight_layout()
-    fig.savefig(
-        os.path.join(
-            "./figures/",
-            "ablation_result_num_offset_win{}_maxoffset{}_offset{}.eps".format(
-                window_size_sec, kde_max_offset, offset_sec
-            ),
-        ),
-        format="eps"
-    )
-    # plt.show()
-    plt.close()
+#
+# def summarize_ablation_augmentation_maxoffset():
+#     window_size_sec = 10
+#     stride_sec = 1
+#     kde_num_offset = 20
+#     window_criterion = 0.8
+#     offset_secs = [0.0, 2.0, 4.0]
+#     kde_max_offsets = [2000, 4000, 6000, 8000, 10000]
+#     kde_max_offset_list = []
+#     ave_offset_list = []
+#     PV1000_list = []
+#     PV700_list = []
+#     PV300_list = []
+#     ave_conf_list = []
+#     ave_num_segs_list = []
+#     first_time_flag = 1
+#
+#     latex = "./final/ablation_maxoffset_result_win{}_str{}_wincrt{}_pca_sigma500_latex.txt".format(
+#         window_size_sec, stride_sec, window_criterion
+#     )
+#     f = open(latex, "w+")
+#
+#     for offset_sec in offset_secs:
+#         for kde_max_offset in kde_max_offsets:
+#             (
+#                 ave_offset,
+#                 PV1000,
+#                 PV700,
+#                 PV300,
+#                 ave_conf,
+#                 num_videos,
+#                 ave_num_segs,
+#                 conf,
+#             ) = read_batch_final_results(
+#                 window_size_sec,
+#                 stride_sec,
+#                 offset_sec,
+#                 kde_num_offset,
+#                 kde_max_offset,
+#                 window_criterion,
+#             )
+#             if first_time_flag:
+#                 last_num_videos = num_videos
+#             else:
+#                 assert last_num_videos == num_videos
+#                 last_num_videos = num_videos
+#
+#             kde_max_offset_list.append(kde_max_offset)
+#             ave_offset_list.append(ave_offset)
+#             PV1000_list.append(PV1000)
+#             PV700_list.append(PV700)
+#             PV300_list.append(PV300)
+#             ave_conf_list.append(ave_conf)
+#             ave_num_segs_list.append(ave_num_segs)
+#             f.write(
+#                 " & {} & {} & {} & {} & {} & {}\\\ \n".format(
+#                     offset_sec,
+#                     int(kde_max_offset / 1000),
+#                     int(ave_offset),
+#                     round(PV700, 2),
+#                     round(PV300, 2),
+#                     int(ave_conf),
+#                 )
+#             )
+#
+#         summ_path = "./final/ablation_max_offset_result_win{}_str{}_offset{}_rdoffset{}_wincrt{}_pca_sigma500_{}videos.csv".format(
+#             window_size_sec,
+#             stride_sec,
+#             offset_sec,
+#             kde_num_offset,
+#             window_criterion,
+#             num_videos,
+#         )
+#         data = {
+#             "kde_max_offset": kde_max_offset_list,
+#             "ave_offset": ave_offset_list,
+#             "PV1000": PV1000_list,
+#             "PV700": PV700_list,
+#             "PV300": PV300_list,
+#             "ave_num_segs": ave_num_segs_list,
+#         }
+#         df = pd.DataFrame(
+#             data,
+#             columns=[
+#                 "kde_max_offset",
+#                 "ave_offset",
+#                 "PV1000",
+#                 "PV700",
+#                 "PV300",
+#                 "ave_num_segs",
+#             ],
+#         )
+#         df.to_csv(summ_path, index=None)
+#
+#         df_plot = df[["kde_max_offset", "ave_offset"]]
+#         fig, ax = plt.subplots()
+#         ax.plot(
+#             df_plot["kde_max_offset"] / 1000, df_plot["ave_offset"] / 1000
+#         )
+#         ax.set_xlabel("max range of random offset in wKDE / sec", fontsize=14)
+#         ax.set_ylabel("average absolute error / sec", fontsize=14)
+#         plt.grid()
+#         fig.savefig(
+#             os.path.join(
+#                 "./figures/",
+#                 "ablation_result_augmentation_win{}_ave_offset{}.eps".format(
+#                     window_size_sec, offset_sec
+#                 ),
+#             ),
+#             format="eps",
+#             dpi=100,
+#             bbox_inches="tight",
+#         )
+#     f.close()
+#     f = open(latex, "r")
+#     print(f.read())
+#
+#
+# def summarize_ablation_augmentation_numoffset():
+#     window_size_sec = 10
+#     stride_sec = 1
+#     window_criterion = 0.8
+#     kde_max_offset = 3000
+#     offset_secs = [0.0, 2.0, 4.0]
+#     kde_num_offsets = [1, 20, 40, 60, 80, 100]
+#     first_time_flag = 1
+#
+#     my_dpi = 100
+#     fig = plt.figure(figsize=(500 / my_dpi, 300 / my_dpi))
+#     ax = fig.add_subplot(111)
+#
+#     for offset_sec in offset_secs:
+#         ave_offset_list = []
+#         PV1000_list = []
+#         PV700_list = []
+#         PV300_list = []
+#         ave_conf_list = []
+#         ave_num_segs_list = []
+#         for kde_num_offset in kde_num_offsets:
+#             (
+#                 ave_offset,
+#                 PV1000,
+#                 PV700,
+#                 PV300,
+#                 ave_conf,
+#                 num_videos,
+#                 ave_num_segs,
+#                 conf,
+#             ) = read_batch_final_results(
+#                 window_size_sec,
+#                 stride_sec,
+#                 offset_sec,
+#                 kde_num_offset,
+#                 kde_max_offset,
+#                 window_criterion,
+#             )
+#             if first_time_flag:
+#                 last_num_videos = num_videos
+#             else:
+#                 assert last_num_videos == num_videos
+#                 last_num_videos = num_videos
+#             if ave_offset:
+#                 ave_offset_list.append(ave_offset)
+#                 PV1000_list.append(PV1000)
+#                 PV700_list.append(PV700)
+#                 PV300_list.append(PV300)
+#                 ave_conf_list.append(ave_conf)
+#                 ave_num_segs_list.append(ave_num_segs)
+#
+#         summ_path = "./result/ablation_num_offset_result_win{}_str{}_offset{}_max_offset{}_wincrt{}_pca_sigma500_{}videos.csv".format(
+#             window_size_sec,
+#             stride_sec,
+#             offset_sec,
+#             kde_max_offset,
+#             window_criterion,
+#             num_videos,
+#         )
+#         data = {
+#             "kde_num_offset": kde_num_offsets,
+#             "ave_offset": ave_offset_list,
+#             "PV1000": PV1000_list,
+#             "PV700": PV700_list,
+#             "PV300": PV300_list,
+#             "ave_num_segs": ave_num_segs_list,
+#         }
+#         df = pd.DataFrame(
+#             data,
+#             columns=[
+#                 "kde_num_offset",
+#                 "ave_offset",
+#                 "PV1000",
+#                 "PV700",
+#                 "PV300",
+#                 "ave_num_segs",
+#             ],
+#         )
+#         df.to_csv(summ_path, index=None)
+#
+#         df_plot = df[["kde_num_offset", "ave_offset"]]
+#         ax.plot(
+#             df_plot["kde_num_offset"],
+#             df_plot["ave_offset"],
+#             label="input shift: {}s".format(offset_sec),
+#         )
+#
+#     ax.set_xlabel("augmentation ratio in wKDE", fontsize=14)
+#     ax.set_ylabel("average error / ms", fontsize=14)
+#     ax.set_xticks([1, 20, 40, 60, 80, 100])
+#     plt.grid()
+#     plt.tight_layout()
+#     fig.savefig(
+#         os.path.join(
+#             "./figures/",
+#             "ablation_result_num_offset_win{}_maxoffset{}_offset{}.eps".format(
+#                 window_size_sec, kde_max_offset, offset_sec
+#             ),
+#         ),
+#         format="eps"
+#     )
+#     # plt.show()
+#     plt.close()
 
 
 if __name__ == "__main__":

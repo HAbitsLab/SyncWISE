@@ -6,7 +6,7 @@ from scipy.optimize import curve_fit
 from textwrap import wrap
 
 
-def AbsErrorROCPerPoint(scores, mode='mean', draw=True):
+def abs_error_ROC_per_point(scores, mode='mean', draw=True):
     # INPUT: n x 2, cols: conf, abs error
     n = scores.shape[0]
     scores = scores[(-scores[:, 0]).argsort()]  # sort confidence in descending order
@@ -26,7 +26,7 @@ def AbsErrorROCPerPoint(scores, mode='mean', draw=True):
     return np.stack((scores[:, 0], ave_error), axis=1)
 
 
-def AbsErrorROCFixedSteps(scores, num_threth=50, mode='median', draw=True):
+def abs_error_ROC_fixed_steps(scores, num_threth=50, mode='median', draw=True):
     # INPUT: n x 2, cols: conf, abs error
     scores = scores[(-scores[:, 0]).argsort()]  # sort confidence in descending order
     ave_error = np.zeros((num_threth, 2))
@@ -54,7 +54,7 @@ def scaled_gaussian(x, mu, sig, s):
     return s * np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
 
 
-def gaussianVoting(scores, kernel_var=500, draw=True, path='../figures/offset.jpg'):
+def gaussian_voting(scores, kernel_var=500, draw=True, path='../figures/offset.jpg'):
     # INPUT: n x 2, conf, offset
     # OUTPUT: offset
     offset_max = 20000
@@ -91,8 +91,8 @@ def gaussianVoting(scores, kernel_var=500, draw=True, path='../figures/offset.jp
     return offset, conf, [popt, pcov]
 
 
-def gaussianVotingPerVideo(scores_dataframe, kernel_var=100, thresh=0, min_voting_segs=0, draw=True,
-                           folder='../figures/cross_corr/'):
+def gaussian_voting_per_video(scores_dataframe, kernel_var=100, thresh=0, min_voting_segs=0, draw=True,
+                              folder='../figures/cross_corr/'):
     # INPUT: n x 3, conf, offset, video
     # OUTPUT: nv, offset
     scores = scores_dataframe[['confidence', 'drift', 'video']].to_numpy()
@@ -109,7 +109,7 @@ def gaussianVotingPerVideo(scores_dataframe, kernel_var=100, thresh=0, min_votin
         valid_segs = scores[:, 2] == vid
         num_segs_cur = sum(valid_segs)
         if num_segs_cur > min_voting_segs:
-            offset[i], conf[i], p = gaussianVoting(scores[valid_segs, :2], kernel_var, draw, path)
+            offset[i], conf[i], p = gaussian_voting(scores[valid_segs, :2], kernel_var, draw, path)
             nlm_params[i, :] = np.concatenate((p[0][:2], np.diag(p[1])[:2]))
             num_valid_segs[i] = num_segs_cur
             num_segs += num_segs_cur
@@ -130,19 +130,13 @@ def gaussianVotingPerVideo(scores_dataframe, kernel_var=100, thresh=0, min_votin
     return summary_df, ave_segs
 
 
-def testCase1():
-    scores = np.random.rand(10, 2)
-    ave_errors = AbsErrorROCPerPoint(scores)
-    print(ave_errors)
-
-
-def videoDrift(scores_dataframe, output_file):
-    offset, _ = gaussianVotingPerVideo(scores_dataframe, draw=True, folder='../figures/cross_corr')
+def video_drift(scores_dataframe, output_file):
+    offset, _ = gaussian_voting_per_video(scores_dataframe, draw=True, folder='../figures/cross_corr')
     offset.to_csv(output_file, index=None)
     return offset
 
 
-def videoDriftROC(scores_dataframe, num_thresh=50, draw=True, folder='../figures/cross_corr'):
+def video_drift_ROC(scores_dataframe, num_thresh=50, draw=True, folder='../figures/cross_corr'):
     # INPUT: n x 2, cols: conf, abs error
     # lb = 3
     # ub = 5
@@ -153,7 +147,7 @@ def videoDriftROC(scores_dataframe, num_thresh=50, draw=True, folder='../figures
     num_videos = np.zeros((num_thresh,))
     num_valid_segs = np.zeros((num_thresh,))
     for i, thresh in enumerate(conf_threshs):
-        offset, ave_segs = gaussianVotingPerVideo(scores_dataframe, kernel_var=500, thresh=thresh, draw=False)
+        offset, ave_segs = gaussian_voting_per_video(scores_dataframe, kernel_var=500, thresh=thresh, draw=False)
         offset = offset.to_numpy()
         valid_videos = ~np.isnan(offset[:, 1].astype(np.float))
         offsets[i] = np.mean(abs(offset[valid_videos, 1]))
@@ -182,7 +176,3 @@ def videoDriftROC(scores_dataframe, num_thresh=50, draw=True, folder='../figures
                     bbox_inches='tight')
         plt.show()
     return offsets, num_videos
-
-
-if __name__ == '__main__':
-    testCase1()

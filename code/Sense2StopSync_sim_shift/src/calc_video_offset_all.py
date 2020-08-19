@@ -10,7 +10,7 @@ from settings import settings
 from utils import create_folder
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../syncwise"))
-from AbsErrorROC import gaussianVotingPerVideo as gaussian_voting_per_video
+from abs_error_ROC import gaussian_voting_per_video
 from drift_confidence import drift_confidence
 
 
@@ -30,18 +30,21 @@ def calc_win_offset_all(
         draw=0
 ):
     """
+    Calculate window offset for all videos
 
     Args:
-        df_dataset_all:
-        info_dataset_all:
-        window_size_sec:
-        stride_sec:
-        kde_num_offset:
-        qualified_window_num:
-        pca:
-        fps:
+        df_dataset_all: dataframe, all videos dataset
+        info_dataset_all: dataframe, all videos information
+        window_size_sec: int, window size
+        stride_sec: int, stride size
+        kde_num_offset: int, in KDE algorithm number of offsets
+        qualified_window_num: int, number of qualified windows
+        pca: boolean, use pca or not
+        fps: float
+        draw: draw flag, default = 0
 
     Returns:
+        dataframe, the starttime, offset and confidence for each window in video
 
     """
     video_all = []
@@ -100,11 +103,13 @@ def calc_win_offset_all(
 
 def print_offset_summary(offset_df):
     """
+    Print summary for offset result
 
     Args:
-        offset_df:
+        offset_df: dataframe, offset
 
     Returns:
+        None
 
     """
     l = len(offset_df)
@@ -123,8 +128,8 @@ def print_offset_summary(offset_df):
 
 
 def calc_video_offset_all(
-        # df_dataset_all,
-        # info_dataset_all,
+        df_dataset_all,
+        info_dataset_all,
         window_size_sec,
         stride_sec,
         offset_sec,
@@ -139,25 +144,26 @@ def calc_video_offset_all(
         draw=0
 ):
     """
+    calculate video offset for all videos
 
     Args:
-        kde_max_offset:
-        window_criterion:
-        offset_sec:
-        df_dataset_all:
-        info_dataset_all:
-        window_size_sec:
-        stride_sec:
-        kde_num_offset:
-        qualified_window_num:
-        save_dir:
-        pca:
-        kernel_var:
-        fps:
-        draw:
+        df_dataset_all: dataframe, data for all videos
+        info_dataset_all: dataframe, information for all videos
+        window_size_sec: int,  window size
+        stride_sec: int, stride
+        offset_sec: float, offset
+        kde_num_offset: int, KDE number of offset
+        kde_max_offset: int, KDE max offset
+        window_criterion: float, window criterion
+        qualified_window_num: int, number of qualified window
+        save_dir: str, save directory
+        pca: boolean, use pca or not
+        kernel_var: int, kernel variance
+        fps: float
+        draw: boolean, draw figure or not
 
     Returns:
-
+        None
     """
     title_suffix = "_win{}_str{}_offset{}_rdoffset{}_maxoffset{}_wincrt{}".format(
         window_size_sec,
@@ -168,14 +174,14 @@ def calc_video_offset_all(
         window_criterion,
     )
     print('\noffset_sec', offset_sec, '\n')
-    with open(
-            os.path.join(temp_dir, "all_video" + title_suffix + "_df_dataset.pkl"), "rb"
-    ) as handle:
-        df_dataset_all = pickle.load(handle)
-    with open(
-            os.path.join(temp_dir, "all_video" + title_suffix + "_info_dataset.pkl"), "rb"
-    ) as handle:
-        info_dataset_all = pickle.load(handle)
+    # with open(
+    #         os.path.join(temp_dir, "all_video" + title_suffix + "_df_dataset.pkl"), "rb"
+    # ) as handle:
+    #     df_dataset_all = pickle.load(handle)
+    # with open(
+    #         os.path.join(temp_dir, "all_video" + title_suffix + "_info_dataset.pkl"), "rb"
+    # ) as handle:
+    #     info_dataset_all = pickle.load(handle)
     scores_dataframe = calc_win_offset_all(
         df_dataset_all=df_dataset_all,
         info_dataset_all=info_dataset_all,

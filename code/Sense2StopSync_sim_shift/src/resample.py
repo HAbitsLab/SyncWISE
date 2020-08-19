@@ -37,8 +37,6 @@ import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 import inspect
 
-# todo: look into np.inf to replace 0
-
 def resample(dataDf, timeColHeader, samplingRate, gapTolerance=np.inf, fixedTimeColumn=None):
     """
     Parameters

@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 
 from segment_video_all import segment_video_all
 from calc_video_offset_all import calc_video_offset_all
@@ -8,9 +9,10 @@ import random
 
 if __name__ == "__main__":
     starttime_file = settings['STARTTIME_TEST_FILE']
-    # data_dir = settings["TEMP_DIR"]
+    data_dir = settings["TEMP_DIR"]
     stride_sec = settings["STRIDE_SEC"]
     random.seed(0)
+    np.random.seed(0)
 
     parameter_str = sys.argv[1]
     (
@@ -34,14 +36,24 @@ if __name__ == "__main__":
         kde_num_offset,
         kde_max_offset,
         window_criterion,
-        # data_dir,
+        data_dir,
         starttime_file,
     )
 
+    # load_windows(
+    #     window_size_sec,
+    #     stride_sec,
+    #     offset_sec,
+    #     kde_num_offset,
+    #     kde_max_offset,
+    #     window_criterion,
+    #     data_dir,
+    # )
+
     # calculate drift for all the windows using PCA
     calc_video_offset_all(
-        df_dataset_all,
-        info_dataset_all,
+        # df_dataset_all,
+        # info_dataset_all,
         window_size_sec,
         stride_sec,
         offset_sec,
@@ -55,8 +67,8 @@ if __name__ == "__main__":
 
     # calculate drift for all the windows using X-axis
     calc_video_offset_all(
-        df_dataset_all,
-        info_dataset_all,
+        # df_dataset_all,
+        # info_dataset_all,
         window_size_sec,
         stride_sec,
         offset_sec,

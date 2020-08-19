@@ -5,6 +5,16 @@ import pandas as pd
 
 
 def csv_read(path):
+    """
+    An alternative method to pandas read_csv, to help avoid the case where read_csv method cause error in multithreads.
+
+    Args:
+        path: str
+
+    Returns:
+        dataframe, data in 'path'
+
+    """
     with open(path) as fd:
         rd = csv.reader(fd)
         header = next(rd)  # initialize column names from first row

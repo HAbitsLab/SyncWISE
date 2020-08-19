@@ -7,27 +7,28 @@ from settings import settings
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../syncwise"))
 from drift_confidence import drift_confidence
-from AbsErrorROC import gaussianVotingPerVideo
+from abs_error_ROC import gaussian_voting_per_video
 
 
 KERNEL_VAR = settings["kernel_var"]
 
-
 def drift_windows_for_all_subjects(df_dataset, info_dataset, window_size_sec=20, stride_sec=5, kde_num_offset=1,
                                    qualified_window_num=200, fps=29.969664, draw=0):
     """
+    Calculate window offset for all videos
 
     Args:
-        df_dataset:
-        info_dataset:
-        window_size_sec:
-        stride_sec:
-        kde_num_offset:
-        qualified_window_num:
-        fps:
-        draw:
+        df_dataset: dataframe, all videos dataset
+        info_dataset: dataframe, all videos information
+        window_size_sec: int, window size
+        stride_sec: int, stride size
+        kde_num_offset: int, in KDE algorithm number of offsets
+        qualified_window_num: int, number of qualified windows
+        fps: float
+        draw: draw flag, default = 0
 
     Returns:
+        dataframe, the starttime, offset and confidence for each window in video
 
     """
     video_all = []
@@ -81,25 +82,27 @@ def calc_drift_all_windows(df_dataset, info_dataset, vid_target, window_size_sec
                            kde_num_offset, kde_max_offset, window_criterion, qualified_window_num,
                            result_dir, kernel_var=KERNEL_VAR, fps=29.969664, draw=0):
     """
+    calculate video offset for all videos
 
     Args:
-        kernel_var:
-        df_dataset:
-        info_dataset:
-        vid_target:
-        window_size_sec:
-        stride_sec:
-        offset_sec:
-        kde_num_offset:
-        kde_max_offset:
-        window_criterion:
-        qualified_window_num:
-        result_dir:
-        fps:
-        draw:
+        df_dataset: dataframe, data for all videos
+        info_dataset: dataframe, information for all videos
+        vid_target: str, video of target
+        window_size_sec: int,  window size
+        stride_sec: int, stride
+        offset_sec: float, offset
+        kde_num_offset: int, KDE number of offset
+        kde_max_offset: int, KDE max offset
+        window_criterion: float, window criterion
+        qualified_window_num: int, number of qualified window
+        save_dir: str, save directory
+        pca: boolean, use pca or not
+        kernel_var: int, kernel variance
+        fps: float
+        draw: boolean, draw figure or not
 
     Returns:
-
+        None
     """
     folder = result_dir + '/result' + vid_target
     if not os.path.exists(folder):
@@ -129,7 +132,7 @@ def calc_drift_all_windows(df_dataset, info_dataset, vid_target, window_size_sec
     if draw:
         if not os.path.exists('figures/MD2K_cross_corr' + title_suffix):
             os.makedirs('figures/MD2K_cross_corr' + title_suffix)
-    offset_df, _ = gaussianVotingPerVideo(scores_dataframe, kernel_var=kernel_var, thresh=0, draw=draw,
+    offset_df, _ = gaussian_voting_per_video(scores_dataframe, kernel_var=kernel_var, thresh=0, draw=draw,
                                           folder='figures/MD2K_cross_corr' + title_suffix)
     offset_df = offset_df.sort_values(by=['offset'])
     offset_df.to_csv(folder + '/final_result_per_video' + title_suffix + '.csv', index=None)

@@ -83,8 +83,13 @@ The result can be found in `final/final_result.txt`. Figures are `Sense2StopSync
 
 ## CMU\_MMAC
 
-(todo)
+Run SyncWISE algorithm on CMU\_MMAC dataset with simulated shifts.
+### Steps:
+In folder `code/Sense2StopSync_sim_shift`: 
 
+> python3 main.py
+
+### Result:
 
 ## Citation
 
@@ -103,7 +108,7 @@ If you find this useful for your research, please use the following.
 	url = {https://doi.org/10.1145/3411824},
 	doi = {10.1145/3411824},
 	journal = {Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.},
-	month = jun,
+	month = sep,
 	articleno = {107},
 	numpages = {27}
 }

@@ -17,8 +17,8 @@ settings["LOW_QUALITY_VIDEOS"] = "low_quality_videos.csv"
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "../../../Sense2StopSync/")
 settings["DATA_DIR"] = DATA_DIR
-settings["reliability_resample_path"] = os.path.join(DATA_DIR, "RESAMPLE200/wild/") #TODO: last step to change name to RESAMPLE
-settings["raw_path"] = os.path.join(DATA_DIR, "RAW/wild/") #TODO: last step to remove wild
+settings["reliability_resample_path"] = os.path.join(DATA_DIR, "RESAMPLE/wild/")
+settings["raw_path"] = os.path.join(DATA_DIR, "RAW/wild/")
 settings["flow_path"] = os.path.join(DATA_DIR, "flow_pwc/")
 settings["qualified_window_num"] = 10
 settings["range_sec_bidir"] = 180  # looping search range is [-range_sec_bidir, range_sec_bidir] (seconds)

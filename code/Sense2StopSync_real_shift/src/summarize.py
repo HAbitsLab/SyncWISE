@@ -17,8 +17,10 @@ def get_test_videos():
 
 def get_test_videos_boundary_removed():
     """
+    get test videos with poor quality videos removed
 
     Returns:
+        list of test videos
 
     """
     test_videos = pd.read_csv(settings["STARTTIME_TEST_FILE"])["video_name"].tolist()
@@ -30,12 +32,22 @@ def get_test_videos_boundary_removed():
 
 def read_batch_final_result(folder, file):
     """
+    Read batch final result
 
     Args:
-        folder:
-        file:
+        folder: str
+        file: str
 
     Returns:
+        float, ave offset
+        float, PV1000
+        float, PV700
+        float, PV300
+        float, ave_conf
+        int, num of videos
+        int, ave_num_segments
+        float, confidence
+        float, offset in seconds
 
     """
     result_df = pd.read_csv(os.path.join(folder, file))
@@ -61,17 +73,17 @@ def read_batch_final_result(folder, file):
         return np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, offset_sec
 
 
-def summarize_shift_per_video(vid, ini_off, max_shift_bidir, in_folder, out_folder):
+def summarize_shift_per_video(vid, in_folder, out_folder):
     """
+    Summarize the shift per video
 
     Args:
-        vid:
-        ini_off:
-        max_shift_bidir:
-        in_folder:
-        out_folder:
+        vid: str, video
+        in_folder: str
+        out_folder: str
 
     Returns:
+        None
 
     """
     window_size_sec = 10
@@ -129,11 +141,13 @@ def summarize_shift_per_video(vid, ini_off, max_shift_bidir, in_folder, out_fold
 
 def summarize_shift_all_videos(result_dir):
     """
+    Summarize shift of all videos
 
     Args:
-        result_dir:
+        result_dir: str, result directory
 
     Returns:
+        None
 
     """
     videos = get_test_videos()
@@ -147,7 +161,7 @@ def summarize_shift_all_videos(result_dir):
     
     for vid, ini_off in zip(videos, offsets):
         if 'result' + vid in subdirs:
-            summarize_shift_per_video(vid, ini_off, max_shift_bidir=180, in_folder=result_dir+'/result'+vid, 
+            summarize_shift_per_video(vid, in_folder=result_dir+'/result'+vid,
                 out_folder=result_dir+'/result_summary_'+vid)
         else:
             print('result for {} not exists.'.format(vid))
@@ -155,13 +169,15 @@ def summarize_shift_all_videos(result_dir):
 
 def success_Ntrials(metric_ms, result_dir, videos):
     """
+    Collect how many video succeed after checking top n candidates
 
     Args:
-        metric_ms:
-        result_dir:
-        videos:
+        metric_ms: int, PV metric in ms
+        result_dir: str
+        videos: list
 
     Returns:
+        None
 
     """
     total = len(videos)
@@ -274,7 +290,7 @@ def success_Ntrials(metric_ms, result_dir, videos):
 if __name__ == '__main__':
     orig_shift_file = settings["ORIGIN_SHIFT_FILE"]
     # result_dir = "../final_result_real/final_all_1st"
-    result_dir = "final"  # TODO: Change result folder to result, same as in sim_offset
+    result_dir = "final"
     
     summarize_shift_all_videos(result_dir)
     

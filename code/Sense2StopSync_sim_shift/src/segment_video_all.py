@@ -17,6 +17,17 @@ sample_counts = settings["sample_counts"]
 flow_path = settings["flow_path"]
 
 def load_start_time(start_time_file, vid):
+    """
+    load start time
+
+    Args:
+        start_time_file: str
+        vid: str, video
+
+    Returns:
+        int, start time
+
+    """
     df_start_time = csv_read(start_time_file).set_index("video_name")
     if vid not in df_start_time.index:
         print("Error: ", vid, " not in ", start_time_file)
@@ -28,7 +39,19 @@ def load_start_time(start_time_file, vid):
 def reliability_df_to_consecutive_seconds(
     df_sensor_rel, window_size_sec, stride_sec, threshold=sample_counts
 ):
-    # use the threshold ">=7Hz" criterion to select 'good' seconds
+    """
+    Convert from reliability df to consecutive seconds represented with start and end time.
+
+    Args:
+        df_sensor_rel: dataframe, sensor reliability
+        window_size_sec:, int, window_size
+        stride_sec: int, stride
+        threshold: float
+
+    Returns:
+        win_start_end: a list of all the possible [window_start, window_end] pairs.
+    """
+    # use the threshold criterion to select 'good' seconds
     rel_seconds = (
         df_sensor_rel[df_sensor_rel["SampleCounts"] > threshold]
         .sort_values(by="Time")["Time"]
@@ -62,10 +85,24 @@ def consecutive_seconds(rel_seconds, window_size_sec, stride_sec=1):
 
 
 def load_flow(vid_path, fps, start_time, offset_sec=0):
+    """
+    load flow data
+
+    Args:
+        vid_path: str, video path
+        fps: float
+        start_time: int
+        offset_sec: int
+
+    Returns:
+        dataframe, flow data dataframe
+        int, length of video in ms
+
+    """
     motion = pickle.load(open(vid_path, "rb"))
-    frame_len = 1000.0 / fps
-    frames = motion.shape[0]
-    len_ms = frames * frame_len
+    frame_len = 1000.0 / fps  # duration of a frame in ms
+    frames = motion.shape[0]  # number of frames
+    len_ms = frames * frame_len  # duration of all frames in ms
     timestamps_int = np.arange(
         start_time + offset_sec * 1000,
         start_time + offset_sec * 1000 + len_ms,
@@ -87,6 +124,23 @@ def load_flow(vid_path, fps, start_time, offset_sec=0):
 def load_sensors_cubic(
     raw_path, sub, device, sensors, sensor_col_header, start_time, end_time, fps
 ):
+    """
+    load sensor data with cubic spline resampling
+
+    Args:
+        raw_path: str,
+        sub: str, subject
+        device: str
+        sensors: list, sensors
+        sensor_col_header: list of sensor column headers
+        start_time: int
+        end_time: int
+        fps: float
+
+    Returns:
+        dataframe, sensor data
+
+    """
     df_list = []
     for s, col in zip(sensors, sensor_col_header):
         df_sensor = read_data_datefolder_hourfile(
@@ -104,6 +158,17 @@ def load_sensors_cubic(
 
 
 def pca_sensor_flow(df_sensor, df_flow):
+    """
+    Calculate the pca of sensor data and flow data separately
+
+    Args:
+        df_sensor: dataframe, sensor data
+        df_flow:dataframe, flow data
+
+    Returns:
+        dataframe, sensor data with pca column
+        dataframe, flow data with pca column
+    """
     pca_sensor = PCA(n_components=1)
     df_sensor[["accx", "accy", "accz"]] -= df_sensor[["accx", "accy", "accz"]].mean()
     df_sensor["acc_pca"] = pca_sensor.fit_transform(
@@ -129,6 +194,28 @@ def add_win_rand_offset(
     window_criterion,
     fps
 ):
+    """
+    add random offset to each window
+
+    Args:
+        df_sensor: dataframe, sensor data
+        df_flow: dataframe, flow data
+        vid_name: str, video name
+        win_start_end: list
+        start_time: int
+        end_time: int
+        kde_num_offset: int
+        kde_max_offset: int
+        window_size_sec: int
+        window_criterion: float
+        fps: float
+
+    Returns:
+        int, count of windows
+        list, a list of all dataframes of videos
+        list, a list of all video data information
+
+    """
     df_dataset_vid = []
     info_dataset_vid = []
     cnt_windows = 0
@@ -185,6 +272,27 @@ def seg_smk_video(
     starttime_file,
     fps,
 ):
+    """
+    Segment one smoking video.
+
+    Args:
+        subject: str
+        video: str
+        window_size_sec: int
+        stride_sec: int
+        offset_sec: int
+        kde_num_offset: int
+        kde_max_offset: int
+        window_criterion: float
+        starttime_file: str
+        fps: float
+
+    Returns:
+        list, a list of (video name, count of windows) pairs
+        list, a list of all dataframes of videos
+        list, a list of all video data information
+
+    """
     # ==========================================================================================
     reliability_resample_path = settings['reliability_resample_path']
     raw_path = settings['raw_path']
@@ -294,10 +402,27 @@ def segment_video_all(
     kde_num_offset,
     kde_max_offset,
     window_criterion,
-    data_dir,
+    # data_dir,
     starttime_file,
     fps=FPS,
 ):
+    """
+    Segment all videos
+
+    Args:
+        window_size_sec: int, window size
+        stride_sec: int, stride
+        offset_sec: float, offset
+        kde_num_offset: int, number of offsets in KDE algorithm
+        kde_max_offset: int, max offset in KDE algorithm
+        window_criterion: float, window criterion
+        starttime_file:, str, start time file
+        fps: float
+
+    Returns:
+         list, a list of all dataframes of videos
+         list, a list of all video data information
+    """
     df_start_time = csv_read(starttime_file).set_index("video_name")
     video_names = df_start_time.index.tolist()
 
@@ -341,41 +466,43 @@ def segment_video_all(
     pd.DataFrame(vid_qual_win_cnt_all, columns=["vid_name", "window_num"]).to_csv(
         "./data/num_valid_windows" + title_suffix + ".csv", index=None
     )
-    with open(
-        os.path.join(data_dir, "all_video" + title_suffix + "_df_dataset.pkl"), "wb"
-    ) as handle:
-        pickle.dump(df_dataset_all, handle, protocol=pickle.HIGHEST_PROTOCOL)
-    with open(
-        os.path.join(data_dir, "all_video" + title_suffix + "_info_dataset.pkl"), "wb"
-    ) as handle:
-        pickle.dump(info_dataset_all, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    # with open(
+    #     os.path.join(data_dir, "all_video" + title_suffix + "_df_dataset.pkl"), "wb"
+    # ) as handle:
+    #     pickle.dump(df_dataset_all, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    # with open(
+    #     os.path.join(data_dir, "all_video" + title_suffix + "_info_dataset.pkl"), "wb"
+    # ) as handle:
+    #     pickle.dump(info_dataset_all, handle, protocol=pickle.HIGHEST_PROTOCOL)
     return df_dataset_all, info_dataset_all
 
 
-def load_windows(
-    window_size_sec,
-    stride_sec,
-    offset_sec,
-    kde_num_offset,
-    kde_max_offset,
-    window_criterion,
-    data_dir
-    ):
-    title_suffix = "_win{}_str{}_offset{}_rdoffset{}_maxoffset{}_wincrt{}".format(
-        window_size_sec,
-        stride_sec,
-        offset_sec,
-        kde_num_offset,
-        kde_max_offset,
-        window_criterion,
-    )
-    pd_window_num = pd.read_csv("./data/num_valid_windows" + title_suffix + ".csv")
-    print(pd_window_num)
-    with open(os.path.join(data_dir, "all_video" + title_suffix + "_df_dataset.pkl"), "rb") as handle:
-        df_dataset = pickle.load(handle)
-    print(len(df_dataset))
-    with open(os.path.join(data_dir, "all_video" + title_suffix + "_info_dataset.pkl"), "rb") as handle:
-        info_dataset = pickle.load(handle)
-    print(len(info_dataset))
-    return df_dataset, info_dataset, pd_window_num
-
+#
+# def load_windows(
+#     window_size_sec,
+#     stride_sec,
+#     offset_sec,
+#     kde_num_offset,
+#     kde_max_offset,
+#     window_criterion,
+#     data_dir
+#     ):
+#     title_suffix = "_win{}_str{}_offset{}_rdoffset{}_maxoffset{}_wincrt{}".format(
+#         window_size_sec,
+#         stride_sec,
+#         offset_sec,
+#         kde_num_offset,
+#         kde_max_offset,
+#         window_criterion,
+#     )
+#     pd_window_num = pd.read_csv("./data/num_valid_windows" + title_suffix + ".csv")
+#     print(pd_window_num)
+#     with open(os.path.join(data_dir, "all_video" + title_suffix + "_df_dataset.pkl"), "rb") as handle:
+#         df_dataset = pickle.load(handle)
+#     print(len(df_dataset))
+#     with open(os.path.join(data_dir, "all_video" + title_suffix + "_info_dataset.pkl"), "rb") as handle:
+#         info_dataset = pickle.load(handle)
+#     print(len(info_dataset))
+#     return df_dataset, info_dataset, pd_window_num
+#

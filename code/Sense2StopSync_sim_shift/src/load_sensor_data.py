@@ -16,12 +16,12 @@ from settings import settings
 
 def unixtime_to_datetime(unixtime):
     """
-
+    Convert unixtime to datetime
     Args:
-        unixtime:
+        unixtime: int, unixtime
 
     Returns:
-
+        datetime
     """
     if len(str(abs(unixtime))) == 13:
         return datetime.utcfromtimestamp(unixtime / 1000). \
@@ -41,16 +41,15 @@ def datetime_to_filename(dt):
 
 def list_date_folders_hour_files(start, end):
     """
+    According to given start and end, list date folders and hour files.
 
     Args:
-        start:
-        end:
+        start: int or datetime,
+        end: int or datetime,
 
     Returns:
+        list, date folders and hour files.
 
-    """
-    """
-    param interval: python datetime format or unixtimestamp (int)
     """
     if isinstance(start, numbers.Integral):
         start = unixtime_to_datetime(start)
@@ -69,20 +68,19 @@ def list_date_folders_hour_files(start, end):
 
 def read_data_datefolder_hourfile(resample_path, subject, device, sensor, start_time, end_time):
     """
+    Read data from date folder and hour file
 
     Args:
-        resample_path:
-        subject:
-        device:
-        sensor:
-        start_time:
-        end_time:
+        resample_path: str, resample path
+        subject: str,
+        device: str,
+        sensor: str,
+        start_time: int,
+        end_time: int,
 
     Returns:
+        dataframe, data
 
-    """
-    """
-    param interval: python unixtimestamp
     """
     # 1. read in all the data within the range
     dfConcat = []

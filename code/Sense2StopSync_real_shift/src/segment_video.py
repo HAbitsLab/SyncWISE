@@ -120,18 +120,20 @@ def load_merge_sensors_cubic_interp(
         raw_path, sub, device, sensors, sensor_col_header, start_time, end_time, fps
 ):
     """
+    load sensor data with cubic spline resampling
 
     Args:
-        raw_path:
-        sub:
-        device:
-        sensors:
-        sensor_col_header:
-        start_time:
-        end_time:
-        fps:
+        raw_path: str,
+        sub: str, subject
+        device: str
+        sensors: list, sensors
+        sensor_col_header: list of sensor column headers
+        start_time: int
+        end_time: int
+        fps: float
 
     Returns:
+        dataframe, sensor data
 
     """
     df_list = []
@@ -155,13 +157,15 @@ def load_merge_sensors_cubic_interp(
 
 def pca_sensor_flow(df_sensor, df_flow):
     """
+    Calculate the pca of sensor data and flow data separately
 
     Args:
-        df_sensor:
-        df_flow:
+        df_sensor: dataframe, sensor data
+        df_flow:dataframe, flow data
 
     Returns:
-
+        dataframe, sensor data with pca column
+        dataframe, flow data with pca column
     """
     pca_sensor = PCA(n_components=1)
     df_sensor[["accx", "accy", "accz"]] -= df_sensor[["accx", "accy", "accz"]].mean()
@@ -189,22 +193,25 @@ def shift_video_w_random_offset(
         fps,
 ):
     """
+    Shift videos with random offset
 
     Args:
-        df_sensor:
-        df_flow:
-        vid_name:
-        win_start_end:
-        start_time:
-        end_time:
-        kde_num_offset:
-        kde_max_offset:
-        window_size_sec:
-        window_criterion:
-        fps:
+        df_sensor: dataframe, sensor data
+        df_flow: dataframe, flow data
+        vid_name: str, video name
+        win_start_end: list
+        start_time: int
+        end_time: int
+        kde_num_offset: int
+        kde_max_offset: int
+        window_size_sec: int
+        window_criterion: float
+        fps: float
 
     Returns:
-
+        int, count of windows
+        list, a list of all dataframes of videos
+        list, a list of all video data information
     """
     df_dataset_vid = []
     info_dataset_vid = []
@@ -261,19 +268,21 @@ def segment_video(
         fps=FPS,
 ):
     """
+    Segment videos.
 
     Args:
-        vid_target:
-        window_size_sec:
-        stride_sec:
-        offset_sec:
-        kde_num_offset:
-        window_criterion:
-        kde_max_offset:
-        fps:
+        vid_target: str, video of target
+        window_size_sec: int, window size
+        stride_sec: int, stride
+        offset_sec: float, offset
+        kde_num_offset: int, number of offsets in KDE algorithm
+        window_criterion: float, window criterion
+        kde_max_offset: int, max offset in KDE algorithm
+        fps: float
 
     Returns:
-
+         list, a list of all dataframes of videos
+         list, a list of all video data information
     """
     video_qualified_window_num_list = []
     df_dataset = []
