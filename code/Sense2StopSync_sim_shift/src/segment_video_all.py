@@ -477,32 +477,3 @@ def segment_video_all(
     #     pickle.dump(info_dataset_all, handle, protocol=pickle.HIGHEST_PROTOCOL)
     return df_dataset_all, info_dataset_all
 
-
-#
-# def load_windows(
-#     window_size_sec,
-#     stride_sec,
-#     offset_sec,
-#     kde_num_offset,
-#     kde_max_offset,
-#     window_criterion,
-#     data_dir
-#     ):
-#     title_suffix = "_win{}_str{}_offset{}_rdoffset{}_maxoffset{}_wincrt{}".format(
-#         window_size_sec,
-#         stride_sec,
-#         offset_sec,
-#         kde_num_offset,
-#         kde_max_offset,
-#         window_criterion,
-#     )
-#     pd_window_num = pd.read_csv("./data/num_valid_windows" + title_suffix + ".csv")
-#     print(pd_window_num)
-#     with open(os.path.join(data_dir, "all_video" + title_suffix + "_df_dataset.pkl"), "rb") as handle:
-#         df_dataset = pickle.load(handle)
-#     print(len(df_dataset))
-#     with open(os.path.join(data_dir, "all_video" + title_suffix + "_info_dataset.pkl"), "rb") as handle:
-#         info_dataset = pickle.load(handle)
-#     print(len(info_dataset))
-#     return df_dataset, info_dataset, pd_window_num
-#

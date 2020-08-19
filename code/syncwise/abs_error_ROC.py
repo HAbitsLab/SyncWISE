@@ -6,55 +6,38 @@ from scipy.optimize import curve_fit
 from textwrap import wrap
 
 
-def abs_error_ROC_per_point(scores, mode='mean', draw=True):
-    # INPUT: n x 2, cols: conf, abs error
-    n = scores.shape[0]
-    scores = scores[(-scores[:, 0]).argsort()]  # sort confidence in descending order
-    if mode == 'mean':
-        # mean of conf
-        cum_error = np.cumsum(scores[:, 1], axis=0)
-        ave_error = cum_error / (np.arange(n) + 1)
-    elif mode == 'median':
-        # median of conf
-        ave_error = np.zeros((n,))
-        for i in range(n):
-            ave_error[i] = np.median(scores[:i + 1, 1])
-    if draw:
-        plt.plot(scores[:, 0], ave_error, '-o')
-        plt.grid()
-        plt.show()
-    return np.stack((scores[:, 0], ave_error), axis=1)
-
-
-def abs_error_ROC_fixed_steps(scores, num_threth=50, mode='median', draw=True):
-    # INPUT: n x 2, cols: conf, abs error
-    scores = scores[(-scores[:, 0]).argsort()]  # sort confidence in descending order
-    ave_error = np.zeros((num_threth, 2))
-    n = scores.shape[0]
-    step_size = n / num_threth
-    for i in range(num_threth):
-        ind = min(np.int((i + 1) * step_size + 1), n - 1)
-        ave_error[i, 0] = scores[ind, 0]
-        if mode == 'mean':
-            ave_error[i, 1] = np.mean(scores[:ind, 1])
-        if mode == 'median':
-            ave_error[i, 1] = np.median(scores[:ind, 1])
-    if draw:
-        plt.plot(ave_error[:, 0], ave_error[:, 1], '-o')
-        plt.grid()
-        plt.show()
-    return ave_error
-
-
 def gaussian(x, mu, sig):
+    """
+    Gaussian kernel
+
+    Args:
+        x: independent variable
+        mu: mean in Gaussian kernel
+        sig: variance in Gaussian kernel
+
+    Returns:
+        Gaussian kernel function
+
+    """
     return 1 / (2 * np.pi * sig) * np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
 
 
-def scaled_gaussian(x, mu, sig, s):
-    return s * np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
-
-
 def gaussian_voting(scores, kernel_var=500, draw=True, path='../figures/offset.jpg'):
+    """
+    Gaussian vote for a video
+
+    Args:
+        scores: numpy array, n x 2, each row consists of (conf, offset)
+        kernel_var: int, variance kernel in Gaussian
+        draw: boolean, draw figure or not
+        path: str, directory to save figure
+
+    Returns:
+        float, offset
+        float, conf
+        list, [popt, pcov]
+
+    """
     # INPUT: n x 2, conf, offset
     # OUTPUT: offset
     offset_max = 20000
@@ -93,8 +76,24 @@ def gaussian_voting(scores, kernel_var=500, draw=True, path='../figures/offset.j
 
 def gaussian_voting_per_video(scores_dataframe, kernel_var=100, thresh=0, min_voting_segs=0, draw=True,
                               folder='../figures/cross_corr/'):
+    """
+    Calculate Gaussian voting result for a video
+
+    Args:
+        scores_dataframe: data frame, scores for each window in a video
+        kernel_var: int, variance kernel in Gaussian
+        thresh: float, threshold
+        min_voting_segs: int, min of voting segments
+        draw: boolean, draw figure or not
+        folder: str
+
+    Returns:
+        dataframe, result df containing ['video', 'offset', 'abs_offset', 'num_segs', 'conf', 'mu', 'sigma', 'mu_var',
+                                       'sigma_var', 'abs_mu']
+        float, average segments
+
+    """
     # INPUT: n x 3, conf, offset, video
-    # OUTPUT: nv, offset
     scores = scores_dataframe[['confidence', 'drift', 'video']].to_numpy()
     scores = scores[scores[:, 0] > thresh]
     videos = np.unique(scores_dataframe[['video']].to_numpy())
@@ -128,51 +127,3 @@ def gaussian_voting_per_video(scores_dataframe, kernel_var=100, thresh=0, min_vo
                                        'sigma_var', 'abs_mu'])
 
     return summary_df, ave_segs
-
-
-def video_drift(scores_dataframe, output_file):
-    offset, _ = gaussian_voting_per_video(scores_dataframe, draw=True, folder='../figures/cross_corr')
-    offset.to_csv(output_file, index=None)
-    return offset
-
-
-def video_drift_ROC(scores_dataframe, num_thresh=50, draw=True, folder='../figures/cross_corr'):
-    # INPUT: n x 2, cols: conf, abs error
-    # lb = 3
-    # ub = 5
-    lb = 0
-    ub = 7
-    conf_threshs = np.linspace(lb, ub, num_thresh)
-    offsets = np.zeros((num_thresh,))
-    num_videos = np.zeros((num_thresh,))
-    num_valid_segs = np.zeros((num_thresh,))
-    for i, thresh in enumerate(conf_threshs):
-        offset, ave_segs = gaussian_voting_per_video(scores_dataframe, kernel_var=500, thresh=thresh, draw=False)
-        offset = offset.to_numpy()
-        valid_videos = ~np.isnan(offset[:, 1].astype(np.float))
-        offsets[i] = np.mean(abs(offset[valid_videos, 1]))
-        num_videos[i] = sum(valid_videos)
-        num_valid_segs[i] = ave_segs
-    if draw:
-        fig, ax = plt.subplots()
-        ax.plot(conf_threshs, offsets, color="red", marker="o")
-        ax.set_xlabel("confidence threshold", fontsize=14)
-        ax.set_ylabel("abs offset", color="red", fontsize=14)
-        ax2 = ax.twinx()
-        ax2.plot(conf_threshs, num_videos, color="blue", marker="o")
-        ax2.set_ylabel("number of valid videos", color="blue", fontsize=14)
-        plt.grid()
-        # plt.show()
-        fig.savefig(os.path.join(folder, "video drift ROC curve"), \
-                    format='jpeg', \
-                    dpi=100, \
-                    bbox_inches='tight')
-        plt.figure()
-        plt.plot(conf_threshs, num_valid_segs, marker="o")
-        plt.grid()
-        plt.savefig(os.path.join(folder, "num of segs"), \
-                    format='jpeg', \
-                    dpi=100, \
-                    bbox_inches='tight')
-        plt.show()
-    return offsets, num_videos

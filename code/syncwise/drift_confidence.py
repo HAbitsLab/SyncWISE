@@ -7,15 +7,18 @@ from textwrap import wrap
 
 def drift_confidence(df_resample, out_path, fps, pca=1, save_fig=0):
     """
+    calculate drift and confidence from sensor data and flow data
 
     Args:
-        df_resample:
-        out_path:
-        fps:
-        pca:
-        save_fig:
+        df_resample: dataframe, resampling dataframe
+        out_path: str
+        fps: float
+        pca: boolean, use pca or not
+        save_fig: boolean, save figure or not
 
     Returns:
+        float, drift
+        float, confidence
 
     """
     if pca:

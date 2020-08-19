@@ -8,7 +8,6 @@ import random
 
 if __name__ == "__main__":
     starttime_file = settings['STARTTIME_TEST_FILE']
-    # data_dir = settings["TEMP_DIR"]
     stride_sec = settings["STRIDE_SEC"]
     random.seed(0)
 

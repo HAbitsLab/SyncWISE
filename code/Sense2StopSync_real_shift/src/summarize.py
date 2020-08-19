@@ -279,7 +279,6 @@ def success_Ntrials(metric_ms, result_dir, videos):
     ax.yaxis.set_major_formatter(mtick.PercentFormatter())
     plt.tight_layout()
     plt.savefig('figures/cdf_PV{}_{}.eps'.format(metric_ms, total), dpi=fig.dpi)
-    # plt.show()
 
     with open("final/final_result.txt", 'w') as f:
         for i in range(10):
@@ -289,7 +288,6 @@ def success_Ntrials(metric_ms, result_dir, videos):
 
 if __name__ == '__main__':
     orig_shift_file = settings["ORIGIN_SHIFT_FILE"]
-    # result_dir = "../final_result_real/final_all_1st"
     result_dir = "final"
     
     summarize_shift_all_videos(result_dir)

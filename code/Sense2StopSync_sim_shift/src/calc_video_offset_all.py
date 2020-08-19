@@ -1,7 +1,6 @@
 import os
 import sys
 from collections import Counter
-import pickle
 
 import numpy as np
 import pandas as pd
@@ -174,14 +173,6 @@ def calc_video_offset_all(
         window_criterion,
     )
     print('\noffset_sec', offset_sec, '\n')
-    # with open(
-    #         os.path.join(temp_dir, "all_video" + title_suffix + "_df_dataset.pkl"), "rb"
-    # ) as handle:
-    #     df_dataset_all = pickle.load(handle)
-    # with open(
-    #         os.path.join(temp_dir, "all_video" + title_suffix + "_info_dataset.pkl"), "rb"
-    # ) as handle:
-    #     info_dataset_all = pickle.load(handle)
     scores_dataframe = calc_win_offset_all(
         df_dataset_all=df_dataset_all,
         info_dataset_all=info_dataset_all,
