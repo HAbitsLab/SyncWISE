@@ -407,7 +407,9 @@ def syncwise():
 
 
 if __name__ == '__main__':
-    # baseline('x')
-    # baseline('PCA')
+    random.seed(0)
+    np.random.seed(0)
+    baseline('x')
+    baseline('PCA')
     syncwise()
 
