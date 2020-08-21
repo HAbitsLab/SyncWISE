@@ -74,7 +74,7 @@ Run SyncWISE algorithm on Sense2StopSync dataset with real shifts.
 
 ### Steps:
 
-In folder `Sense2StopSync_real_shift`: Run cmd `sh run.sh 7` (if run this bash file with 7 cores). It will take 10 hours using 32 Intel i9-9980XE CPU @ 3.00GHz cores. Please be patient.
+In folder `code/Sense2StopSync_real_shift`: Run cmd `sh run.sh 7` (if run this bash file with 7 cores). It will take 10 hours using 32 Intel i9-9980XE CPU @ 3.00GHz cores. Please be patient.
 
 > sh run.sh 7
 <!--2. `summarize.py`: generate final result summary.-->
