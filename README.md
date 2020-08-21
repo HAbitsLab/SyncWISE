@@ -8,7 +8,7 @@ $ url $
 
 ## Requirements:
 
-> **Python 3 required** (for python build)
+**Python 3 required** (for python build)
 
 Install required modules (numpy scipy pandas sklearn matplotlib statistics pyyaml).
 
