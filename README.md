@@ -60,7 +60,7 @@ Run cmd `sh run.sh 7` (if run this bash file with 7 cores). Run on test set with
 
 <!--4. `summarize.py`: generate final result or sensitivity study result summary.-->
 
-Note: we use cross-correlation calculation function copied from https://lexfridman.com/carsync/ (the baseline method in our paper) for a fair comparison, the same as the following experiments.
+Note: we use cross-correlation calculation function copied from https://lexfridman.com/carsync/ (the baseline method in our paper) for a fair comparison, the same for the following experiments.
 
 
 ### Result:
