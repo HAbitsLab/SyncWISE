@@ -31,7 +31,11 @@ If you find this useful for your research, please use the following.
 
 ### Download dataset
 
-$ url $
+**Sense2StopSync dataset:** https://doi.org/10.5281/zenodo.4029502
+
+**CMU_MMAC dataset:** 
+
+
 
 ### Requirements:
 
