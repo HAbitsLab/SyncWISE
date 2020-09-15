@@ -31,9 +31,11 @@ If you find this useful for your research, please use the following.
 
 ### Download dataset
 
-**Sense2StopSync dataset:** https://doi.org/10.5281/zenodo.4029502
 
-**CMU_MMAC dataset:** 
+1. Sense2StopSync: download the dataset from https://doi.org/10.5281/zenodo.4029502. Unzip to folder Sense2StopSync as the file structure shown below.
+
+
+2. CMU_MMAC dataset: (stay tuning)
 
 
 
@@ -94,13 +96,13 @@ root
 	b. The result can be found in `final/final_result.txt`. Figures are `Sense2StopSync_real_shift/cdf_PV300_1.eps` (all test videos) and `Sense2StopSync_real_shift/cdf_PV300_2.eps` (without low quality test videos).
 
 
-3. CMU\_MMAC: Run SyncWISE algorithm on CMU\_MMAC dataset with simulated shifts.
+3. CMU\_MMAC: Run SyncWISE algorithm on CMU\_MMAC dataset with simulated shifts. (stay tuning)
 
 	a. In folder `code/Sense2StopSync_sim_shift`: 
 
-	> sh 
+	> sh ..
 
-	b. The result can be found in 
+	b. The result can be found in ..
 	
 
 
