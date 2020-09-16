@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+      <link rel="stylesheet" href="styles.css">
+      <meta charset="UTF-8">
+      <meta name="keywords" content="3D Shape learning">
+      <meta name="author" content="Stefan Stojanov, Anh Thai">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+ 
+<div class="header">
+  <h1>SyncWISE: Window Induced Shift Estimation for Synchronization of Video and Accelerometry from Wearable Sensors</h1>
+  <p class="authors">
+        <a href="https://sites.google.com/view/yunzhang/home">Yun C. Zhang</a><sup>1</sup>*,
+        <a href="https://zsb87.github.io/">Shibo Zhang</a><sup>2</sup>*,
+        <a href="https://aptx4869lm.github.io/">Miao Liu</a><sup>1</sup>,
+        Elyse Daly<sup>2</sup>,
+        Samuel Battalio<sup>2</sup>,
+        <a href="https://md2k.org/santosh">Santosh Kumar</a><sup>3</sup>,
+        <a href="https://www.feinberg.northwestern.edu/faculty-profile/az/profile.html?xid=16136">Bonnie Spring</a><sup>2</sup>,
+        <a href="https://rehg.org/">James M. Rehg</a><sup>1</sup>,
+        <a href="http://www.nalshurafa.com/">Nabil Alshurafa</a><sup>2</sup>,
+  </p>
+  <p class="institution">
+        <sup>1</sup>Georgia Institute of Technology,
+        <sup>2</sup>Norhwestern University,
+        <sup>3</sup>University of Memphis,
+  </p>
+  <span class="footnote">
+    * equal contribution
+  </p>
+</div>     
+
+<div class="links">
+
+    <div class="gallery">
+      <a target="_blank" href="https://github.com/HAbitsLab/SyncWISE/">
+	<img src="img/code_img.png" alt="code">
+      </a>
+      <div class="desc">Code</div>
+    </div>
+    
+    <div class="gallery">
+      <a target="_blank" href="https://drive.google.com/file/d/1jZl6hark38PxK37jiJv0F5l06IxZTNn5/view?usp=sharing">
+	<img src="img/paper_img.png" alt="arxiv link">
+      </a>
+      <div class="desc">Paper <a href="/SyncWISE/bibtex/syncwise.bib">[BibTex]</a></div>
+    </div>
+
+</div>
+
+<div class="content">
+
+<p>Our work provides a flexible, general purpose solution for synchronizing wearable cameras with other mobile sensors that can be applied to in-the-wild data, does not impose any additional burden on participants, and is fully-automated</p>
+<center><img src="img/input_output.png"></center>
+<div class="desc"> Illustration of input and output in our SyncWISE system.</div>
+
+<h1> Abstract </h1>
+<p>
+The development and validation of computational models to detect daily human behaviors (e.g., eating, smoking, brushing) using wearable devices requires labeled data collected from the natural field environment, with tight time synchronization of the micro-behaviors (e.g., start/end times of hand-to-mouth gestures during a smoking puff or an eating gesture) and the associated labels. Video data is increasingly being used for such label collection. Unfortunately, wearable devices and video cameras with independent (and drifting) clocks make tight time synchronization challenging. To address this issue, we present the Window Induced Shift Estimation method for Synchronization (SyncWISE) approach. We demonstrate the feasibility and effectiveness of our method by synchronizing the timestamps of a wearable camera and wearable accelerometer from 163 videos representing 45.2 hours of data from 21 participants enrolled in a real-world smoking cessation study. Our approach shows significant improvement over the state-of-the-art, even in the presence of high data loss, achieving 90% synchronization accuracy given a synchronization tolerance of 700 milliseconds. Our method also achieves state-of-the-art synchronization performance on the CMU-MMAC dataset.
+</p>
+
+<h1> Dataset </h1>
+      
+Data was collected during a smoking cessation study, Sense2Stop.  The S2S-Sync dataset is generated from Sense2Stop during the three-day pre-quit period in which subjects exhibited maintenance behavior (i.e. typical smoking patterns). The wearable devices worn by the participants included a GoPro video camera strapped to their chest, a chest-worn sensor suite comprising an accelerometer, electrocardiography (ECG) sensor and respiratory plethysmography (RIP) sensor, and a pair of wrist-worn devices with tri-axial accelerometers and gyroscopes on each wrist. Additionally, they were provided with a study-dedicated smartphone with data collection software installed. We focus our analysis on synchronizing between the chest-worn accelerometer and GoPro video camera.<br>
+<p><a href="https://doi.org/10.5281/zenodo.4029502">[Download]</a>
+</p>
+<center><img src="img/devices.png" style="width:495px;height:449px;"></center>
+<div class="desc"> The wearable sensory platform.</div>
+</div>
+
+<div class="content">
+
+
+<h1> Method Overview</h1>
+<p>Our approach to matching noisy video and accelerometry signals captured from mobile devices has three steps, window pair sampling, window pair matching and offset estimation. It selects high-quality windows of accelerometry data for matching, as a way to overcome the noise and missingness in this signal. Weighted kernel density estimation (wKDE) is used to combine noisy estimates of the shift produced from multiple accelerometry-video window pairs to obtain an accurate estimate.</p>
+<center><img src="img/overview.png" ></center>
+<div class="desc"> SyncWISE Algorithm overview.</div>
+
+<h1> Experiment Results </h1>
+<p>
+We compare our method to baseline <a href="#Baseline">[2]</a> on two datasets: our novel S2S-Sync dataset and the CMU-MMAC kitchen activities dataset <a href="#CMU_MMAC">[1]</a>.
+</p>
+<div class="desc"> Result on S2S-Sync Dataset for baseline-xx, baseline-PCA, SyncWISE-xx and SyncWISE (𝑇𝑤=10s, 𝑇𝑚𝑎𝑥 =5s, 𝑁𝑠=20) with random shift. The SyncWISE results are averaged over 30 runs. In each run, we generate a random number from [-3 sec, 3 sec] as the ground truth shift between videos and accelerometer data. Baseline results are based on a single run because it is not affected by different input shift and no randomization is involved in this algorithm.</div>
+<center><img src="img/s2s_sync.png" ></center>
+
+<ul><li>*-xx – select the 𝑥 component of both the accelerometry and camera acceleration features</li>
+<li>*-PCA – use the PCA-based approach to determine the 1D signals used for cross-correlation</li>
+<li>PV-n – Percentage of video clips which are synchronized to an offset error of less than 𝑛 ms</li></ul>
+
+<div class="desc"> Final result on the CMU-MMAC Dataset for synchronization between wearable camera and right arm accelerometor using SyncWISE, Baseline-PCA and Baseline-xx (with 𝑇𝑤=60s, 𝑇𝑚𝑎𝑥 =60s, 𝑁𝑠=10).</div>
+<center><img src="img/cmu_mmac.png" ></center>
+
+<h1> Citation  </h1>
+<p>Bibliography information of this work:</p>
+<p>
+Yun C. Zhang, Shibo Zhang, Miao Liu, Elyse Daly, Samuel Battalio, Santosh Kumar, Bonnie Spring, James M. Rehg, and Nabil Alshurafa. 2020. SyncWISE: Window Induced Shift Estimation for Synchronization of Video and Accelerometry from Wearable Sensors. <cite>Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.</cite> 4, 3, Article 107 (September 2020), 26 pages. https://doi.org/10.1145/3411824
+</p>
+<pre>
+@article{zhang2020syncwise,
+author = {Zhang, Yun C. and Zhang, Shibo and Liu, Miao and Daly, Elyse and Battalio, Samuel and Kumar, Santosh and Spring, Bonnie and Rehg, James M. and Alshurafa, Nabil},
+title = {SyncWISE: Window Induced Shift Estimation for Synchronization of Video and Accelerometry from Wearable Sensors},
+year = {2020},
+issue_date = {September 2020},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {4},
+number = {3},
+url = {https://doi.org/10.1145/3411824},
+doi = {10.1145/3411824},
+journal = {Proc. ACM Interact. Mob. Wearable Ubiquitous Technol.},
+month = sep,
+articleno = {107},
+numpages = {26},
+keywords = {Video, Wearable Sensor, Wearable Camera, Automatic Synchronization, Temporal Drift, Accelerometry, Time Synchronization}
+}
+</pre>
+
+
+<h1> Contact  </h1>
+<p>
+For questions about paper, please contact yzhang467 at gatech dot edu
+</p>
+
+<h1> References  </h1>
+<ol>
+  <li><a name="CMU_MMAC">Fernando de la Torre, Jessica K. Hodgins, Javier Montano, and Sergio Valcarcel. 2009. Detailed Human Data Acquisition of Kitchen Activities: the CMU-Multimodal Activity Database (CMU-MMAC). In <cite>CHI 2009 Workshop. Developing Shared Home Behavior Datasets to
+Advance HCI and Ubiquitous Computing Research.</cite></a></li>
+  <li><a name="Baseline">Lex Fridman, Daniel E Brown, William Angell, Irman Abdić, Bryan Reimer, and Hae Young Noh. 2016. Automated Synchronization of Driving Data using Vibration and Steering Events. <cite>Pattern Recognition Letters</cite> 75 (2016), 9–15.</a></li>
+</ol> 
+</div>
